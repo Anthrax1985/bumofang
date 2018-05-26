@@ -1,0 +1,159 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="SceneMapper">
+	<resultMap type="Scene" id="SceneMap">
+		<id column="id" property="id"/>
+		<result column="name" property="name"/>
+		<result column="create_time" property="createTime"/>
+	</resultMap>
+
+	<resultMap type="SceneMask" id="SceneMaskMapper">
+		<id column="id" property="id"/>
+		<id column="scene_id" property="sceneId"/>
+		<result column="scene_name" property="sceneName"/>
+		<result column="mask_name" property="maskName"/>
+		<result column="create_time" property="createTime"/>
+	</resultMap>
+	
+	<!-- 新增-->
+	<insert id="saveScene" parameterType="pd">
+		insert into SCENE(
+			NAME,
+			CREATE_TIME,
+			scene_upload_time
+		) values (
+			#{NAME},
+			NOW(),
+			unix_timestamp(NOW())
+		)
+	</insert>
+
+
+	<insert id="updateScene" parameterType="pd">
+		UPDATE SCENE
+		SET scene_upload_time = unix_timestamp(NOW())
+		WHERE
+		name = #{NAME}
+	</insert>
+
+	<insert id="updateProductUploadTime" parameterType="java.lang.String">
+		UPDATE PRODUCT
+		SET product_upload_time = unix_timestamp(NOW())
+		WHERE
+		product_name = #{value}
+	</insert>
+
+	<insert id="updateD3dUploadTime" parameterType="java.lang.String">
+		UPDATE PRODUCT
+		SET d3d_upload_time = unix_timestamp(NOW())
+		WHERE
+		product_name = #{value}
+	</insert>
+
+	<insert id="updateSceneUploadTime" parameterType="java.lang.String">
+		UPDATE SCENE
+		SET scene_upload_time = unix_timestamp(NOW())
+		WHERE
+		name = #{value}
+	</insert>
+
+	<insert id="saveProductScene" parameterType="pd">
+		insert into PRODUCT_SCENE(
+			NAME,
+			PRODUCT_ID,
+			SCENE_ID,
+			PRODUCT_NAME,
+			SCENE_NAME,
+			MASK_ID,
+			MASK_NAME,
+			CREATE_TIME
+		) values (
+			#{NAME},
+			#{PRODUCT_ID},
+			#{SCENE_ID},
+			#{PRODUCT_NAME},
+			#{SCENE_NAME},
+			#{MASK_ID},
+			#{MASK_NAME},
+			NOW()
+		)
+	</insert>
+
+
+	<!-- 通过id获取数据 -->
+	<select id="findBySceneName" parameterType="java.lang.String" resultMap="SceneMap">
+		select * from
+		SCENE
+		where
+		NAME = #{value}
+	</select>
+
+	<select id="findBySceneMaskName" parameterType="java.lang.String" resultMap="SceneMaskMapper">
+		select * from
+		SCENE_MASK
+		where
+		MASK_NAME = #{value}
+	</select>
+
+
+	<!-- 新增-->
+	<insert id="saveSceneMask" parameterType="pd">
+		insert into SCENE_MASK(
+		SCENE_ID,
+		SCENE_NAME,
+		MASK_NAME,
+		CREATE_TIME
+		) values (
+		#{SCENE_ID},
+		#{NAME},
+		#{MASK_NAME},
+		NOW()
+		)
+	</insert>
+
+	<select id="findExist" parameterType="pd" resultType="pd">
+		select * from
+		PRODUCT_SCENE
+		where
+		PRODUCT_NAME = #{PRODUCT_NAME}
+		AND
+		SCENE_NAME = #{SCENE_NAME}
+		AND
+		MASK_NAME =  #{MASK_NAME}
+	</select>
+
+	<select id="list_scene" parameterType="page" resultType="pd">
+		SELECT
+		    s.id,
+			s.name,
+			concat(s.name, '.txt') as coordinateFile,
+			m.mask_name as mask,
+			concat(m.mask_name, '.png') as maskPicture,
+			s.scene_upload_time as sceneUploadTime,
+			FROM_UNIXTIME(s.scene_upload_time) as strSceneUploadTime
+		FROM
+			SCENE s
+		LEFT JOIN
+			scene_mask m
+		ON
+			s.id = m.scene_id
+
+		<if test="pd!=null and pd.scene_name!=null and pd.scene_name!=''"><!-- 品名检索 -->
+			WHERE m.mask_name like concat('%',#{pd.scene_name},'%')
+		</if>
+
+		ORDER BY
+			s.name, m.mask_name
+	</select>
+
+	<select id="listWhereIn" parameterType="java.lang.String" resultType="pd">
+		select * from
+		PRODUCT_SCENE
+		WHERE
+		product_name IN
+		<foreach item="item" index="index" collection="array" open="(" separator="," close=")">
+			#{item}
+		</foreach>
+	</select>
+
+</mapper>

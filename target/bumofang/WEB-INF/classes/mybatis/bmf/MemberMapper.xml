@@ -1,0 +1,233 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="MemberMapper">
+	
+	
+	<!-- 新增-->
+	<insert id="save" parameterType="pd">
+		insert into MEMBER(
+			NUMBER,	
+			USERNAME,	
+			PASSWORD,	
+			NICKNAME,	
+			AVATAR,	
+			MOBILE,	
+			IDFA,	
+			DEFAULT_AREA,	
+			DEFAULT_ADDRESS,	
+			REALNAME,	
+			ID_CARD,	
+			BANK_CARD,	
+			REGISTER_DATE,	
+			UPDATE_DATE,	
+			LAST_LOGIN_DATE,	
+			LAST_LOGIN_IP,	
+			STATUS,	
+			WECHAT_ID,	
+			QQ_ID,	
+			WEIBO_ID
+		) values (
+			#{NUMBER},	
+			#{USERNAME},	
+			#{PASSWORD},	
+			#{NICKNAME},	
+			#{AVATAR},	
+			#{MOBILE},	
+			#{IDFA},	
+			#{DEFAULT_AREA},	
+			#{DEFAULT_ADDRESS},	
+			#{REALNAME},	
+			#{ID_CARD},	
+			#{BANK_CARD},	
+			#{REGISTER_DATE},	
+			#{UPDATE_DATE},	
+			#{LAST_LOGIN_DATE},	
+			#{LAST_LOGIN_IP},	
+			#{STATUS},	
+			#{WECHAT_ID},	
+			#{QQ_ID},	
+			#{WEIBO_ID}
+		)
+	</insert>
+	
+	
+	
+	<!-- 删除-->
+	<delete id="delete" parameterType="pd">
+		delete from MEMBER
+		where 
+			ID = #{ID}
+	</delete>
+	
+	
+	<!-- 修改 -->
+	<update id="edit" parameterType="pd">
+		update  MEMBER
+			set 
+			<if test="NUMBER!=null and NUMBER!=''">
+				NUMBER = #{NUMBER},
+			</if>
+			<if test="PASSWORD!=null and PASSWORD!=''">
+				PASSWORD = #{PASSWORD},
+			</if>
+			<if test="NICKNAME!=null and NICKNAME!=''">
+				NICKNAME = #{NICKNAME},
+			</if>
+			<if test="AVATAR!=null and AVATAR!=''">
+				AVATAR = #{AVATAR},
+			</if>
+			<if test="MOBILE!=null and MOBILE!=''">
+				MOBILE = #{MOBILE},
+			</if>
+			<if test="IDFA!=null and IDFA!=''">
+				IDFA = #{IDFA},
+			</if>
+			<if test="DEFAULT_AREA!=null and DEFAULT_AREA!=''">
+				DEFAULT_AREA = #{DEFAULT_AREA},
+			</if>
+			<if test="DEFAULT_ADDRESS!=null and DEFAULT_ADDRESS!=''">
+				DEFAULT_ADDRESS = #{DEFAULT_ADDRESS},
+			</if>
+			<if test="REALNAME!=null and REALNAME!=''">
+				REALNAME = #{REALNAME},
+			</if>
+			<if test="ID_CARD!=null and ID_CARD!=''">
+				ID_CARD = #{ID_CARD},
+			</if>
+			<if test="STATUS!=null and STATUS!=''">
+				STATUS = #{STATUS},
+			</if>
+			<if test="WECHAT_ID!=null and WECHAT_ID!=''">
+				WECHAT_ID = #{WECHAT_ID},
+			</if>
+			<if test="QQ_ID!=null and QQ_ID!=''">
+				QQ_ID = #{QQ_ID},
+			</if>
+			<if test="WEIBO_ID!=null and WEIBO_ID!=''">
+				WEIBO_ID = #{WEIBO_ID},
+			</if>
+			<if test="USERNAME!=null and USERNAME!=''">
+				USERNAME = #{USERNAME},
+			</if>
+			<if test="PROFESSION_SUP!=null and PROFESSION_SUP!=''">
+				PROFESSION_SUP = #{PROFESSION_SUP},
+			</if>
+			<if test="PROFESSION_SUB!=null and PROFESSION_SUB!=''">
+				PROFESSION_SUB = #{PROFESSION_SUB},
+			</if>
+			<if test="ADDR_PROVINCE!=null and ADDR_PROVINCE!=''">
+				ADDR_PROVINCE = #{ADDR_PROVINCE},
+			</if>
+			<if test="ADDR_CITY!=null and ADDR_CITY!=''">
+				ADDR_CITY = #{ADDR_CITY},
+			</if>
+			<if test="DEL_FLAG!=null and DEL_FLAG!=''">
+				DEL_FLAG = #{DEL_FLAG},
+			</if>
+			<if test="REASON!=null and REASON!=''">
+				REASON = #{REASON},
+			</if>
+			<if test="UPDATE_PERSON!=null and UPDATE_PERSON!=''">
+				UPDATE_PERSON = #{UPDATE_PERSON},
+			</if>
+			<if test="UPDATE_TIME!=null and UPDATE_TIME!=''">
+				UPDATE_TIME = #{UPDATE_TIME},
+			</if>
+			ID = ID
+			where 
+				ID = #{ID}
+	</update>
+	
+	
+	<!-- 通过ID获取数据 -->
+	<select id="findById" parameterType="pd" resultType="pd">
+		select * from 
+			MEMBER
+		where 
+			ID = #{ID}
+	</select>
+	
+	<!-- 通过ID获取数据 -->
+	<select id="findByMobile" parameterType="pd" resultType="pd">
+		select * from 
+			MEMBER
+		where 
+			MOBILE = #{MOBILE}
+	</select>
+	
+	<!-- 列表 -->
+	<select id="datalistPage" parameterType="page" resultType="pd">
+		select * from 
+				MEMBER a
+		WHERE
+		a.DEL_FLAG =1 
+		<if test="pd.QUERY_KEY!=null and pd.QUERY_KEY!=''"><!-- 用户名检索 -->
+			and a.NICKNAME like concat('%',#{pd.QUERY_KEY},'%')
+		</if>	
+		<if test="pd.query_profession_sup!=null and pd.query_profession_sup!=''"><!-- 用户名检索 -->
+			and a.PROFESSION_SUP like concat('%',#{pd.query_profession_sup},'%')
+		</if>	
+		<if test="pd.query_province!=null and pd.query_province!=''"><!-- 省份检索 -->
+			and a.ADDR_PROVINCE like concat('%',#{pd.query_province},'%')
+		</if>	
+		<if test="pd.query_city!=null and pd.query_city!=''"><!-- 城市检索 -->
+			and a.ADDR_CITY like concat('%',#{pd.query_city},'%')
+		</if>	
+	</select>
+<!-- 	列表（黑名单） -->
+	<select id="dataBlacklistPage" parameterType="page" resultType="pd">
+		select * from 
+				MEMBER a
+		WHERE
+		a.DEL_FLAG !=1 
+	</select>
+	
+	<!-- 列表(全部) -->
+	<select id="listAll" parameterType="pd" resultType="pd">
+		select * from 
+				MEMBER a
+	</select>
+	
+	
+	<!-- 查找udid -->
+	<select id="findByIDFA" parameterType="pd" resultType="pd">
+		select * from 
+				MEMBER a
+		where
+		a.IDFA =#{IDFA}
+	</select>
+	
+	<!-- 批量删除 -->
+	<delete id="deleteAll" parameterType="String">
+		delete from MEMBER
+		where 
+			ID in
+		<foreach item="item" index="index" collection="array" open="(" separator="," close=")">
+                 #{item}
+		</foreach>
+	</delete>
+<!-- 用户注册app端-->
+	<insert id="saveInfo" parameterType="pd">
+		insert into MEMBER(
+			NICKNAME,	
+			MOBILE,	
+			IDFA,	
+			REGISTER_DATE,	
+			DEL_FLAG,	
+			PROFESSION_SUP,	
+			PROFESSION_SUB,	
+			ADDR_PROVINCE,	
+			ADDR_CITY
+		) values (
+			#{NICKNAME},	
+			#{MOBILE},	
+			#{IDFA},	
+			#{REGISTER_DATE},	
+			#{DEL_FLAG},	
+			#{PROFESSION_SUP},	
+			#{PROFESSION_SUB},	
+			#{ADDR_PROVINCE},	
+			#{ADDR_CITY}
+		)
+	</insert>	
+</mapper>

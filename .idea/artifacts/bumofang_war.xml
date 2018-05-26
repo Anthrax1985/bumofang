@@ -1,0 +1,8 @@
+<component name="ArtifactManager">
+  <artifact type="war" name="bumofang:war">
+    <output-path>$PROJECT_DIR$/target</output-path>
+    <root id="archive" name="bumofang.war">
+      <element id="artifact" artifact-name="bumofang:war exploded" />
+    </root>
+  </artifact>
+</component>

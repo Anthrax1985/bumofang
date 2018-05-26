@@ -1,0 +1,4 @@
+Name	Sex	Age	Chinese	Math	English	Science
+林俊杰	男	30	1	0	0	1
+赵丽颖	女	28	1	1	0	0
+胡歌	男	36	0	0	1	1

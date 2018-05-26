@@ -1,0 +1,725 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="ProductMapper">
+	<resultMap type="Product" id="productResultMap">
+		<id column="id" property="id"/>
+		<result column="product_name" property="productName"/>
+		<result column="product_craft" property="productCraft"/>
+		<result column="product_material" property="productMaterial"/>
+		<result column="product_narrow_price" property="productNarrowPrice"/>
+		<result column="product_wide_price" property="productWidePrice"/>
+		<result column="product_component" property="productComponent"/>
+		<result column="product_unit_weight" property="productUnitWeight"/>
+		<result column="product_narrow_width" property="productNarrowWidth"/>
+		<result column="product_wide_width" property="productWideWidth"/>
+		<result column="pattern_horizontal_size" property="patternHorizontalSize"/>
+		<result column="pattern_vertical_size" property="patternVerticalSize"/>
+		<result column="product_source_area" property="productSourceArea"/>
+		<result column="pattern_picture1" property="patternPicture1"/>
+		<result column="pattern_picture2" property="patternPicture2"/>
+		<result column="quality_picture1" property="qualityPicture1"/>
+		<result column="quality_picture2" property="qualityPicture2"/>
+		<result column="quality_picture3" property="qualityPicture3"/>
+		<result column="quality_picture4" property="qualityPicture4"/>
+		<result column="quality_control_report" property="qualityControlReport"/>
+		<result column="del_flag" property="delFlag"/>
+		<result column="create_user_id" property="createUserId"/>
+		<result column="create_time" property="createTime"/>
+		<result column="color_str_list" property="colorStrList"/>
+		<result column="style_str_list" property="styleStrList"/>
+		<result column="application_str_list" property="applicationStrList"/>
+		<result column="craft_str" property="craftStr"/>
+		<result column="material_str" property="materialStr"/>
+		<result column="product_upload_time" property="productUploadTime"/>
+		<result column="d3d_upload_time" property="d3dUploadTime"/>
+	</resultMap>
+
+	<!-- 供app接口使用 -->
+	<resultMap type="ProductResItem" id="ProductResItemResultMap">
+		<id column="select_ele_id" property="selectEleId"/>
+		<result column="product_id" property="productId"/>
+		<result column="product_name" property="productName"/>
+		<result column="quality_picture" property="qualityPicture"/>
+		<result column="quality_picture" property="qualityPicture"/>
+		<result column="del_flag" property="delFlag"/>
+		<result column="temp_flag" property="tempFlag"/>
+		<result column="product_upload_time" property="productUploadTime"/>
+		<result column="d3d_upload_time" property="d3dUploadTime"/>
+	</resultMap>
+	<!-- 供app接口使用 -->
+	<resultMap type="SelectProductReq" id="selectProductReqResultMap">
+		<id column="color_id" property="selectEleId"/>
+		<result column="style_id" property="styleId"/>
+		<result column="application_id" property="applicationId"/>
+		<result column="material_id" property="materialId"/>
+	</resultMap>
+	<!-- 临时接口使用 -->
+	<resultMap type="ProductEviNameAsso" id="productEviNameAssoResultMap">
+			<id column="id" property="id"/>
+			<id column="product_id" property="productId"/>
+			<id column="evi_name" property="eviName"/>
+	</resultMap>
+	
+	<!-- 商品列表(全部)(供app使用) -->
+	<!--<select id="listAll4App" parameterType="ProductResItem" resultMap="ProductResItemResultMap">-->
+		<!--select-->
+			<!--a.id 'product_id',-->
+			<!--IFNULL(a.quality_picture3,'') 'quality_picture',-->
+			<!--a.del_flag,-->
+			<!--a.temp_flag-->
+		<!--from-->
+			<!--product a-->
+	<!--</select>-->
+
+
+	<!--<select id="search4App" parameterType="pd" resultMap="ProductResItemResultMap">-->
+		<!--select-->
+		<!--a.id 'product_id',-->
+		<!--IFNULL(a.quality_picture3,'') 'quality_picture',-->
+		<!--a.del_flag,-->
+		<!--a.temp_flag-->
+		<!--from-->
+		<!--product a-->
+		<!--WHERE-->
+		<!--a.product_name =  #{product_name}-->
+		<!--a.product_name =  concat('%',#{product_name},'%')-->
+	<!--</select>-->
+
+	<select id="listAll4App" parameterType="ProductResItem" resultMap="ProductResItemResultMap">
+		SELECT
+		a.id 'product_id',
+		CONCAT(IFNULL(a.product_name, '') , '-Q2.jpg') as  'quality_picture',
+		a.del_flag,
+		a.temp_flag,
+		a.product_upload_time
+		FROM
+		product a
+		WHERE
+		a.del_flag=0
+	</select>
+
+
+	<select id="search4App" parameterType="pd" resultMap="ProductResItemResultMap">
+		SELECT
+		a.id 'product_id',
+		CONCAT(IFNULL(a.product_name, '') , '-Q2.jpg') as  'quality_picture',
+		a.del_flag,
+		a.temp_flag,
+		a.product_upload_time
+		FROM
+		product a
+		WHERE
+		a.product_name like  concat ('%',#{product_name},'%')
+		AND
+		a.del_flag=0
+	</select>
+
+
+
+
+
+	<!-- 商品列表(根据颜色)(供app使用) -->
+	<!--IFNULL(b.quality_picture3,'') 'quality_picture',-->
+	<select id="listAllColor" parameterType="ProductResItem" resultMap="ProductResItemResultMap">
+		select
+			a.product_id 'product_id',
+			CONCAT(IFNULL(b.product_name, '') , '-Q2.jpg') as  'quality_picture',
+			b.del_flag,
+			b.temp_flag
+		from
+			product_record_color a
+		LEFT JOIN
+			product b
+		ON
+			b.id = a.product_id
+		WHERE
+			a.color_id = #{selectEleId}
+	</select>
+	<!-- 商品列表(根据风格)(供app使用) -->
+	<!--IFNULL(b.quality_picture3,'') 'quality_picture',-->
+	<select id="listAllStyle" parameterType="ProductResItem" resultMap="ProductResItemResultMap">
+		select 
+			a.product_id 'product_id',
+			CONCAT(IFNULL(b.product_name, '') , '-Q2.jpg') as  'quality_picture',
+			b.del_flag,
+			b.temp_flag
+		from 
+			product_record_style a
+		LEFT JOIN
+			product b
+		ON
+			b.id = a.product_id
+		WHERE
+			a.style_id = #{selectEleId} 
+	</select>
+	<!-- 商品列表(根据材料)(供app使用) -->
+	<!--IFNULL(a.quality_picture3,'') 'quality_picture',-->
+	<select id="listAllMaterial" parameterType="ProductResItem" resultMap="ProductResItemResultMap">
+		select 
+			a.id 'product_id',
+			CONCAT(IFNULL(a.product_name, '') , '-Q2.jpg') as  'quality_picture',
+			a.del_flag
+		from 
+			product a
+		WHERE
+			a.product_material =  #{selectEleId} 
+	</select>
+	<!-- 商品列表(根据应用)(供app使用) -->
+	<!--IFNULL(b.quality_picture3,'') 'quality_picture',-->
+	<select id="listAllApplication" parameterType="ProductResItem" resultMap="ProductResItemResultMap">
+		select 
+			a.product_id 'product_id',
+			CONCAT(IFNULL(b.product_name, '') , '-Q2.jpg') as  'quality_picture',
+			b.del_flag,
+			b.temp_flag
+		from 
+			product_record_application a
+		LEFT JOIN
+			product b
+		ON
+			b.id = a.product_id
+		WHERE
+			a.application_id = #{selectEleId} 
+	</select>
+	<!-- 商品列表(根据商品名称)(供app使用) -->
+	<!--<select id="listSameDesignedPro" parameterType="String" resultMap="ProductResItemResultMap">-->
+			<!--SELECT-->
+				<!--a.id 'product_id',-->
+				<!--a.product_name,-->
+				<!--a.quality_picture1 'quality_picture',-->
+				<!--a.temp_flag-->
+			<!--FROM-->
+				<!--product a-->
+			<!--WHERE-->
+				<!--a.product_name like CONCAT(#{value},'%')  and a.del_flag = 0-->
+	<!--</select>-->
+
+	<!--//质地图400:200(长方形) Q1-->
+	<select id="listSameDesignedPro" parameterType="String" resultMap="ProductResItemResultMap">
+		SELECT
+		a.id 'product_id',
+		a.product_name,
+		CONCAT(IFNULL(a.product_name, '') , '-Q1.jpg') 'quality_picture',
+		a.temp_flag,
+		a.product_upload_time,
+		a.d3d_upload_time
+		FROM
+		product a
+		WHERE
+		a.product_name like CONCAT(#{value},'%')  and a.del_flag = 0
+	</select>
+	
+	
+	<!-- 根据名字查询排序(供app使用) -->
+	<select id="selectByProductName" parameterType="pd" resultType="pd">
+		select product_name from product a 
+		where a.product_name>#{product_name}
+		order by product_name asc 
+		limit 0,1
+	</select>
+	
+	<!-- 通过id获取数据 -->
+	<select id="selectById" parameterType="pd" resultType="pd">
+		select id, product_name, pattern_picture1, pattern_picture2, quality_picture1, quality_picture2, quality_picture3, quality_picture4
+		from product
+		where id = #{product_id}
+	</select>
+	
+	
+	<!-- 根据产品id获取对应的有效场景名称 -->
+	<select id="userfulEvi4Pro" parameterType="java.lang.Long" resultMap="productEviNameAssoResultMap">
+		SELECT
+			a.product_id,
+			a.evi_name
+		FROM
+			product_eviname_asso a
+		WHERE
+			a.product_id = #{value}
+	</select>
+	
+	<!-- 新增-->
+	<insert id="save" parameterType="Product" useGeneratedKeys="true" keyProperty="id">
+		insert into product(
+			product_name,
+			product_craft,
+			product_material,
+			product_narrow_price,
+			product_wide_price,
+			product_component,
+			product_unit_weight,
+			product_narrow_width,
+			product_wide_width,
+			pattern_horizontal_size,
+			pattern_vertical_size,
+			product_source_area,
+			pattern_picture1,
+			pattern_picture2,
+			quality_picture1,
+			quality_picture2,
+			quality_picture3,
+			quality_picture4,
+			quality_control_report,
+			del_flag,
+			create_user_id,
+			create_time
+		) values (
+			#{productName},
+			#{productCraft},
+			#{productMaterial},
+			#{productNarrowPrice},
+			#{productWidePrice},
+			#{productComponent},
+			#{productUnitWeight},
+			#{productNarrowWidth},
+			#{productWideWidth},
+			#{patternHorizontalSize},
+			#{patternVerticalSize},
+			#{productSourceArea},
+			#{patternPicture1},
+			#{patternPicture2},
+			#{qualityPicture1},
+			#{qualityPicture2},
+			#{qualityPicture3},
+			#{qualityPicture4},
+			#{qualityControlReport},
+			#{delFlag},
+			#{createUserId},
+			#{createTime}
+		)
+	</insert>
+	
+	<!-- 删除-->
+	<delete id="delete" parameterType="java.lang.Long">
+		delete from product
+		where 
+			id = #{value}
+	</delete>
+
+	<!-- 修改 -->
+	<update id="edit" parameterType="Product">
+		update product
+			set 
+			<if test="productName!=null and productName!=''">
+				product_name = #{productName},
+			</if>
+			<if test="productCraft!=null and productCraft!=''">
+				product_craft = #{productCraft},
+			</if>
+			<if test="productMaterial!=null and productMaterial!=''">
+				product_material = #{productMaterial},
+			</if>
+			<if test="productNarrowPrice!=null">
+				product_narrow_price = #{productNarrowPrice},
+			</if>	
+			<if test="productWidePrice!=null">
+				product_wide_price = #{productWidePrice},
+			</if>	
+			<if test="productComponent!=null and productComponent!=''">
+				product_component = #{productComponent},
+			</if>
+			<if test="productUnitWeight!=null">
+				product_unit_weight = #{productUnitWeight},
+			</if>	
+			<if test="productNarrowWidth!=null">
+				product_narrow_width = #{productNarrowWidth},
+			</if>	
+			<if test="productWideWidth!=null">
+				product_wide_width = #{productWideWidth},
+			</if>	
+			<if test="patternHorizontalSize!=null">
+				pattern_horizontal_size = #{patternHorizontalSize},
+			</if>	
+			<if test="patternVerticalSize!=null">
+				pattern_vertical_size = #{patternVerticalSize},
+			</if>	
+			<if test="productSourceArea!=null and productSourceArea!=''">
+				product_source_area = #{productSourceArea},
+			</if>
+			<if test="patternPicture1!=null and patternPicture1!=''">
+				pattern_picture1 = #{patternPicture1},
+			</if>
+			<if test="patternPicture2!=null and patternPicture2!=''">
+				pattern_picture2 = #{patternPicture2},
+			</if>
+			<if test="qualityPicture1!=null and qualityPicture1!=''">
+				quality_picture1 = #{qualityPicture1},
+			</if>
+			<if test="qualityPicture2!=null and qualityPicture2!=''">
+				quality_picture2 = #{qualityPicture2},
+			</if>
+			<if test="qualityPicture3!=null and qualityPicture3!=''">
+				quality_picture3 = #{qualityPicture3},
+			</if>
+			<if test="qualityPicture4!=null and qualityPicture4!=''">
+				quality_picture4 = #{qualityPicture4},
+			</if>
+			<if test="qualityControlReport!=null and qualityControlReport!=''">
+				quality_control_report = #{qualityControlReport},
+			</if>
+			<if test="delFlag!=null">
+				del_flag = #{delFlag},
+			</if>
+			id = id
+			where 
+				id = #{id}
+	</update>
+	
+	
+	<!-- 通过id获取数据 -->
+	<select id="findById" parameterType="java.lang.Long" resultMap="productResultMap">
+		select * from 
+			product
+		where 
+			id = #{value}
+	</select>
+	
+
+	<select id="findByProductName" parameterType="java.lang.String" resultMap="productResultMap">
+		select * from
+		product
+		where
+		PRODUCT_NAME = #{value}
+		order by id DESC
+		limit 1
+	</select>
+	
+	<!-- 修改 -->
+	<select id="findByCondition" parameterType="Product" resultMap="productResultMap">
+		select * from 
+			product where 1=1
+			<if test="createUserId!=null and createUserId!=''">
+				and create_user_id = #{createUserId}
+			</if>
+			<if test="productName!=null and productName!=''">
+				and product_name = #{productName}
+			</if>
+			<if test="productCraft!=null and productCraft!=''">
+				and product_craft = #{productCraft}
+			</if>
+			<if test="productMaterial!=null and productMaterial!=''">
+				and product_material = #{productMaterial}
+			</if>
+			<if test="productNarrowPrice!=null">
+				and product_narrow_price = #{productNarrowPrice}
+			</if>	
+			<if test="productWidePrice!=null">
+				and product_wide_price = #{productWidePrice}
+			</if>	
+			<if test="productComponent!=null and productComponent!=''">
+				and product_component = #{productComponent}
+			</if>
+			<if test="productUnitWeight!=null">
+				and product_unit_weight = #{productUnitWeight}
+			</if>	
+			<if test="productNarrowWidth!=null">
+				and product_narrow_width = #{productNarrowWidth}
+			</if>	
+			<if test="productWideWidth!=null">
+				and product_wide_width = #{productWideWidth}
+			</if>	
+			<if test="patternHorizontalSize!=null">
+				and pattern_horizontal_size = #{patternHorizontalSize}
+			</if>	
+			<if test="patternVerticalSize!=null">
+				and pattern_vertical_size = #{patternVerticalSize}
+			</if>	
+			<if test="productSourceArea!=null and productSourceArea!=''">
+				and product_source_area = #{productSourceArea}
+			</if>
+			<if test="patternPicture1!=null and patternPicture1!=''">
+				and pattern_picture1 = #{patternPicture1}
+			</if>
+			<if test="patternPicture2!=null and patternPicture2!=''">
+				and pattern_picture2 = #{patternPicture2}
+			</if>
+			<if test="qualityPicture1!=null and qualityPicture1!=''">
+				and quality_picture1 = #{qualityPicture1}
+			</if>
+			<if test="qualityPicture2!=null and qualityPicture2!=''">
+				and quality_picture2 = #{qualityPicture2}
+			</if>
+			<if test="qualityPicture3!=null and qualityPicture3!=''">
+				and quality_picture3 = #{qualityPicture3}
+			</if>
+			<if test="qualityPicture4!=null and qualityPicture4!=''">
+				and quality_picture4 = #{qualityPicture4}
+			</if>
+			<if test="qualityControlReport!=null and qualityControlReport!=''">
+				and quality_control_report = #{qualityControlReport}
+			</if>
+			<if test="delFlag!=null">
+				and del_flag = #{delFlag}
+			</if>
+	</select>
+	
+	<!-- 列表 -->
+	<select id="datalistPage" parameterType="page" resultMap="productResultMap">
+			select * from (select 
+			  a.*, b.craft_name 'craft_str', c.material_name 'material_str',
+			  GROUP_CONCAT(DISTINCT e.color_name) color_str_list,
+			  GROUP_CONCAT(DISTINCT g.style_name) style_str_list ,
+			  GROUP_CONCAT(DISTINCT i.application_name) application_str_list
+			from 
+			  product a 
+			LEFT JOIN	product_param_craft b ON b.id = a.product_craft
+			LEFT JOIN product_param_material c ON c.id = a.product_material
+			LEFT JOIN product_record_color d ON d.product_id = a.id
+			LEFT JOIN product_param_color e ON e.id = d.color_id
+			LEFT JOIN product_record_style f ON f.product_id = a.id
+			LEFT JOIN product_param_style g ON f.style_id = g.id
+			LEFT JOIN product_record_application h ON h.product_id =a.id
+			LEFT JOIN product_param_application i ON i.id = h.application_id
+			where a.del_flag = 0
+			GROUP BY a.id
+			order by a.create_time desc) aa
+			WHERE
+			1=1
+		<if test="pd.query_color!=null and pd.query_color!=''"><!-- 颜色检索 -->
+			and aa.color_str_list like concat('%',#{pd.query_color},'%')
+		</if>	
+		<if test="pd.query_style!=null and pd.query_style!=''"><!-- 风格检索 -->
+			and aa.style_str_list like concat('%',#{pd.query_style},'%')
+		</if>	
+		<if test="pd.query_craft!=null and pd.query_craft!=''"><!-- 工艺检索 -->
+			and aa.craft_str like concat('%',#{pd.query_craft},'%')
+		</if>	
+		<if test="pd.query_material!=null and pd.query_material!=''"><!-- 材质检索 -->
+			and aa.material_str like concat('%',#{pd.query_material},'%')
+		</if>	
+		<if test="pd.query_application!=null and pd.query_application!=''"><!-- 应用检索 -->
+			and aa.application_str_list like concat('%',#{pd.query_application},'%')
+		</if>	
+		<if test="pd.query_key!=null and pd.query_key!=''"><!-- 品名检索 -->
+			and aa.product_name like concat('%',#{pd.query_key},'%')
+		</if>
+	</select>
+	
+	
+	<!-- 列表 -->
+	<select id="blackDatalistPage" parameterType="page" resultMap="productResultMap">
+			select * from (select 
+			  a.*,
+			  b.craft_name 'craft_str',
+			  c.material_name 'material_str',
+			  GROUP_CONCAT(DISTINCT e.color_name) color_str_list,
+			  GROUP_CONCAT(DISTINCT g.style_name) style_str_list ,
+			  GROUP_CONCAT(DISTINCT i.application_name) application_str_list
+			from 
+			  product a 
+			LEFT JOIN
+			  product_param_craft b
+			ON
+			  b.id = a.product_craft
+			LEFT JOIN
+			  product_param_material c
+			ON
+			  c.id = a.product_material
+			LEFT JOIN
+			  product_record_color d
+			ON
+			  d.product_id = a.id
+			LEFT JOIN
+			  product_param_color e
+			ON
+			  e.id = d.color_id
+			LEFT JOIN
+			  product_record_style f
+			ON
+			  f.product_id = a.id
+			LEFT JOIN
+			  product_param_style g
+			ON
+			  f.style_id = g.id
+			LEFT JOIN
+			  product_record_application h
+			ON
+			  h.product_id =a.id
+			LEFT JOIN
+			  product_param_application i
+			ON
+			  i.id = h.application_id
+			where a.del_flag = 1
+			GROUP BY a.id
+			order by a.create_time desc) aa
+			WHERE
+			1=1
+		<if test="pd.query_color!=null and pd.query_color!=''"><!-- 颜色检索 -->
+			and aa.color_str_list like concat('%',#{pd.query_color},'%')
+		</if>	
+		<if test="pd.query_style!=null and pd.query_style!=''"><!-- 风格检索 -->
+			and aa.style_str_list like concat('%',#{pd.query_style},'%')
+		</if>	
+		<if test="pd.query_craft!=null and pd.query_craft!=''"><!-- 工艺检索 -->
+			and aa.craft_str like concat('%',#{pd.query_craft},'%')
+		</if>	
+		<if test="pd.query_material!=null and pd.query_material!=''"><!-- 材质检索 -->
+			and aa.material_str like concat('%',#{pd.query_material},'%')
+		</if>	
+		<if test="pd.query_application!=null and pd.query_application!=''"><!-- 应用检索 -->
+			and aa.application_str_list like concat('%',#{pd.query_application},'%')
+		</if>	
+		<if test="pd.query_key!=null and pd.query_key!=''"><!-- 品名检索 -->
+			and aa.product_name like concat('%',#{pd.query_key},'%')
+		</if>
+	</select>
+	
+	<!-- 列表(全部) -->
+	<select id="listAll" parameterType="String" resultMap="productResultMap">
+		select * from product a
+		where a.del_flag=0
+	</select>
+	
+	<!-- 批量删除 -->
+	<delete id="deleteBatch" parameterType="String">
+		delete from product
+		where 
+			id in
+		<foreach item="item" index="index" collection="array" open="(" separator="," close=")">
+                 #{item}
+		</foreach>
+	</delete>
+	
+		<!-- 获取产品部分信息-->
+	<select id="productPartInfo" parameterType="java.lang.Long" resultMap="productResultMap">
+		select 
+			a.id,
+			b.craft_name 'craft_str',
+			c.material_name 'material_str',
+			GROUP_CONCAT(DISTINCT e.color_name) color_str_list,
+			GROUP_CONCAT(DISTINCT g.style_name) style_str_list ,
+			GROUP_CONCAT(DISTINCT i.application_name) application_str_list
+		from 
+			product a 
+		LEFT JOIN
+			product_param_craft b
+		ON
+			b.id = a.product_craft
+		LEFT JOIN
+			product_param_material c
+		ON
+			c.id = a.product_material
+		LEFT JOIN
+			product_record_color d
+		ON
+			d.product_id = a.id
+		LEFT JOIN
+			product_param_color e
+		ON
+			e.id = d.color_id
+		LEFT JOIN
+			product_record_style f
+		ON
+			f.product_id = a.id
+		LEFT JOIN
+			product_param_style g
+		ON
+			f.style_id = g.id
+		LEFT JOIN
+			product_record_application h
+		ON
+			h.product_id =a.id
+		LEFT JOIN
+			product_param_application i
+		ON
+			i.id = h.application_id
+		where a.id = #{id}
+	</select>
+		<!-- 商品列表(多次筛选)(供app使用) -->
+	    <!--IFNULL(a.quality_picture3,'') 'quality_picture',-->
+	<select id="listByMultiSelected" parameterType="SelectProductReq" resultMap="ProductResItemResultMap">
+		SELECT
+			a.id 'product_id',
+		    CONCAT(IFNULL(a.product_name, '') , '-Q2.jpg') 'quality_picture',
+			a.del_flag,
+			a.temp_flag,
+			a.product_upload_time,
+			a.d3d_upload_time
+		FROM
+			product a
+		LEFT JOIN
+			product_record_color b
+		ON
+			b.product_id = a.id
+		LEFT JOIN
+			product_record_style c
+		ON
+			c.product_id = a.id
+		LEFT JOIN
+			product_record_application d
+		on
+			d.product_id = a.id
+		where
+			1=1
+		<if test="colorId != null and colorId !=''">
+			AND
+			b.color_id =#{colorId}
+		</if>
+		<if test="styleId != null and styleId !=''">
+			AND
+			c.style_id = #{styleId}
+		</if>
+		<if test="applicationId != null and applicationId !=''">
+			and
+			d.application_id=#{applicationId}
+			</if>
+		<if test="materialId != null and materialId !=''">
+			and
+			a.product_material = #{materialId}
+		</if>
+		GROUP BY
+			a.id
+	</select>
+
+
+	<select id="listWhereIn" parameterType="String" resultMap="productResultMap">
+		select * from (select
+		a.*,
+		b.craft_name 'craft_str',
+		c.material_name 'material_str',
+		GROUP_CONCAT(DISTINCT e.color_name) color_str_list,
+		GROUP_CONCAT(DISTINCT g.style_name) style_str_list ,
+		GROUP_CONCAT(DISTINCT i.application_name) application_str_list
+		from
+		product a
+		LEFT JOIN
+		product_param_craft b
+		ON
+		b.id = a.product_craft
+		LEFT JOIN
+		product_param_material c
+		ON
+		c.id = a.product_material
+		LEFT JOIN
+		product_record_color d
+		ON
+		d.product_id = a.id
+		LEFT JOIN
+		product_param_color e
+		ON
+		e.id = d.color_id
+		LEFT JOIN
+		product_record_style f
+		ON
+		f.product_id = a.id
+		LEFT JOIN
+		product_param_style g
+		ON
+		f.style_id = g.id
+		LEFT JOIN
+		product_record_application h
+		ON
+		h.product_id =a.id
+		LEFT JOIN
+		product_param_application i
+		ON
+		i.id = h.application_id
+		where a.del_flag = 0
+		GROUP BY a.id
+		order by a.create_time desc) aa
+		WHERE
+		id IN
+		<foreach item="item" index="index" collection="array" open="(" separator="," close=")">
+			#{item}
+		</foreach>
+	</select>
+</mapper>

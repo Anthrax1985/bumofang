@@ -1,0 +1,192 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="MessageSystemMapper">
+	<resultMap type="MessageSystem" id="messageSystemResultMap">
+		<id column="id" property="id"/>
+		<result column="release_title" property="releaseTitle"/>
+		<result column="release_info" property="releaseInfo"/>
+		<result column="releaser_id" property="releaserId"/>
+		<result column="releaser_info" property="releaserInfo"/>
+		<result column="release_time" property="releaseTime"/>
+		<result column="auditor_id" property="auditorId"/>
+		<result column="auditor_info" property="auditorInfo"/>
+		<result column="audit_time" property="auditTime"/>
+		<result column="status" property="status"/>
+		<result column="del_flag" property="delFlag"/>
+		<result column="create_user_id" property="createUserId"/>
+		<result column="create_time" property="createTime"/>
+	</resultMap>
+	
+	<!-- 新增-->
+	<insert id="save" parameterType="MessageSystem" useGeneratedKeys="true" keyProperty="id">
+		insert into message_system(
+			release_title,
+			release_info,
+			releaser_id,
+			releaser_info,
+			release_time,
+			auditor_id,
+			auditor_info,
+			audit_time,
+			status,
+			del_flag,
+			create_user_id,
+			create_time
+		) values (
+			#{releaseTitle},
+			#{releaseInfo},
+			#{releaserId},
+			#{releaserInfo},
+			#{releaseTime},
+			#{auditorId},
+			#{auditorInfo},
+			#{auditTime},
+			#{status},
+			#{delFlag},
+			#{createUserId},
+			#{createTime}
+		)
+	</insert>
+	
+	<!-- 删除-->
+	<delete id="delete" parameterType="java.lang.Long">
+		delete from message_system
+		where 
+			id = #{value}
+	</delete>
+
+	<!-- 修改 -->
+	<update id="edit" parameterType="MessageSystem">
+		update message_system
+			set 
+			<if test="releaseTitle!=null and releaseTitle!=''">
+				release_title = #{releaseTitle},
+			</if>
+			<if test="releaseInfo!=null and releaseInfo!=''">
+				release_info = #{releaseInfo},
+			</if>
+			<if test="releaserId!=null">
+				releaser_id = #{releaserId},
+			</if>
+			<if test="releaserInfo!=null and releaserInfo!=''">
+				releaser_info = #{releaserInfo},
+			</if>
+			<if test="releaseTime!=null and releaseTime!=''">
+				release_time = #{releaseTime},
+			</if>
+			<if test="auditorId!=null">
+				auditor_id = #{auditorId},
+			</if>
+			<if test="auditorInfo!=null and auditorInfo!=''">
+				auditor_info = #{auditorInfo},
+			</if>
+			<if test="auditTime!=null and auditTime!=''">
+				audit_time = #{auditTime},
+			</if>
+			<if test="status!=null">
+				status = #{status},
+			</if>
+			<if test="delFlag!=null">
+				del_flag = #{delFlag},
+			</if>
+			id = id
+			where 
+				id = #{id}
+	</update>
+	
+	
+	<!-- 通过id获取数据 -->
+	<select id="findById" parameterType="java.lang.Long" resultMap="messageSystemResultMap">
+		select * from 
+			message_system
+		where 
+			id = #{value}
+	</select>
+	
+	<!-- 修改 -->
+	<select id="findByCondition" parameterType="MessageSystem" resultMap="messageSystemResultMap">
+		select * from 
+			message_system where 1=1
+			<if test="createUserId!=null and createUserId!=''">
+				and create_user_id = #{createUserId}
+			</if>
+			<if test="releaseTitle!=null and releaseTitle!=''">
+				and release_title = #{releaseTitle}
+			</if>
+			<if test="releaseInfo!=null and releaseInfo!=''">
+				and release_info = #{releaseInfo}
+			</if>
+			<if test="releaserId!=null">
+				and releaser_id = #{releaserId}
+			</if>
+			<if test="releaserInfo!=null and releaserInfo!=''">
+				and releaser_info = #{releaserInfo}
+			</if>
+			<if test="releaseTime!=null and releaseTime!=''">
+				and release_time = #{releaseTime}
+			</if>
+			<if test="auditorId!=null">
+				and auditor_id = #{auditorId}
+			</if>
+			<if test="auditorInfo!=null and auditorInfo!=''">
+				and auditor_info = #{auditorInfo}
+			</if>
+			<if test="auditTime!=null and auditTime!=''">
+				and audit_time = #{auditTime}
+			</if>
+			<if test="status!=null">
+				and status = #{status}
+			</if>
+			<if test="delFlag!=null">
+				and del_flag = #{delFlag}
+			</if>
+	</select>
+	
+	<!-- 列表 -->
+	<select id="datalistPage" parameterType="page" resultMap="messageSystemResultMap">
+		select * from 
+				message_system a where 1=1
+		<if test="pd.query_time_start!=null and pd.query_time_start!=''"><!-- 时间检索 -->
+			and a.create_time &gt;= #{pd.query_time_start}
+		</if>
+		<if test="pd.query_time_end!=null and pd.query_time_end!=''"><!-- 时间检索 -->
+			and a.create_time &lt;= #{pd.query_time_end}
+		</if>	
+		<if test="pd.query_key!=null and pd.query_key!=''"><!-- 关键字检索 -->
+			and a.name like concat('%',#{pd.query_key},'%')
+		</if>
+			order by a.create_time desc	
+	</select>
+	
+	<!-- 列表(全部) -->
+	<select id="listAll" parameterType="String" resultMap="messageSystemResultMap">
+		select * from message_system a
+	</select>
+	
+	<!-- 批量删除 -->
+	<delete id="deleteBatch" parameterType="String">
+		delete from message_system
+		where 
+			id in
+		<foreach item="item" index="index" collection="array" open="(" separator="," close=")">
+                 #{item}
+		</foreach>
+	</delete>
+		<!-- 列表(提出被会员删除的消息) -->
+	<select id="listForMember" parameterType="java.lang.Long" resultMap="messageSystemResultMap">
+		SELECT 
+			a.* 
+		FROM 
+			message_system a
+		WHERE
+			a.status = 1 
+			and 
+			a.id not in 
+			(
+				SELECT b.message_id 
+				FROM message_system_delete_record b 
+				where b.member_id=#{value}
+			)
+		order by a.audit_time desc
+	</select>
+</mapper>

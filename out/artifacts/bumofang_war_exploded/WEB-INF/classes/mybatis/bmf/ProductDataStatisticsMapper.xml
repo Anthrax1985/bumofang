@@ -1,0 +1,552 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="ProductDataStatisticsMapper">
+	<resultMap type="ProductDataStatistics" id="productDataStatisticsResultMap">
+		<id column="id" property="id"/>
+		<result column="member_id" property="memberId"/>
+		<result column="product_id" property="productId"/>
+		<result column="iPad_ip" property="ipadIp"/>
+		<result column="browse_time" property="browseTime"/>
+		<result column="create_user_id" property="createUserId"/>
+		<result column="create_time" property="createTime"/>
+	</resultMap>
+	<resultMap type="ProductDataBrowseAmountList" id="productDataBrowseAmountListResultMap">
+		<result column="time_period" property="timePeriod"/>
+		<result column="browse_amount" property="browseAmount"/>
+	</resultMap>
+	<resultMap type="ProductDataBrowseAndTypeItem" id="productDataBrowseAndTypeItemResultMap">
+		<result column="name" property="name"/>
+		<result column="name1" property="name1"/>
+		<result column="value" property="value"/>
+	</resultMap>
+	<resultMap type="ProductDataTableDetailItem" id="productDataTableDetailItemResultMap">
+		<result column="amount" property="amount"/>
+		<result column="period" property="period"/>
+		<result column="req_period" property="reqPeriod"/>
+	</resultMap>
+	<resultMap type="DataReqItem4Browse" id="pataReqItem4BrowseResultMap">
+		<result column="member_id" property="memberId"/>
+		<result column="product_id" property="productId"/>
+		<result column="year" property="year"/>
+	</resultMap>
+	
+	<!-- 新增-->
+	<insert id="save" parameterType="ProductDataStatistics" useGeneratedKeys="true" keyProperty="id">
+		insert into statistics_data_product(
+			member_id,
+			product_id,
+			iPad_ip,
+			browse_time,
+			create_user_id,
+			create_time
+		) values (
+			#{memberId},
+			#{productId},
+			#{ipadIp},
+			#{browseTime},
+			#{createUserId},
+			#{createTime}
+		)
+	</insert>
+	
+	<!-- 删除-->
+	<delete id="delete" parameterType="java.lang.Long">
+		delete from statistics_data_product
+		where 
+			id = #{value}
+	</delete>
+
+	<!-- 修改 -->
+	<update id="edit" parameterType="ProductDataStatistics">
+		update statistics_data_product
+			set 
+			<if test="memberId!=null">
+				member_id = #{memberId},
+			</if>
+			<if test="productId!=null">
+				product_id = #{productId},
+			</if>
+			<if test="ipadIp!=null and ipadIp!=''">
+				iPad_ip = #{ipadIp},
+			</if>
+			<if test="browseTime!=null and browseTime!=''">
+				browse_time = #{browseTime},
+			</if>
+			id = id
+			where 
+				id = #{id}
+	</update>
+	
+	
+	<!-- 通过id获取数据 -->
+	<select id="findById" parameterType="java.lang.Long" resultMap="productDataStatisticsResultMap">
+		select * from 
+			statistics_data_product
+		where 
+			id = #{value}
+	</select>
+	
+	<!-- 修改 -->
+	<select id="findByCondition" parameterType="ProductDataStatistics" resultMap="productDataStatisticsResultMap">
+		select * from 
+			statistics_data_product where 1=1
+			<if test="createUserId!=null and createUserId!=''">
+				and create_user_id = #{createUserId}
+			</if>
+			<if test="memberId!=null">
+				and member_id = #{memberId}
+			</if>
+			<if test="productId!=null">
+				and product_id = #{productId}
+			</if>
+			<if test="ipadIp!=null and ipadIp!=''">
+				and iPad_ip = #{ipadIp}
+			</if>
+			<if test="browseTime!=null and browseTime!=''">
+				and browse_time = #{browseTime}
+			</if>
+	</select>
+	
+	<!-- 列表 -->
+	<select id="datalistPage" parameterType="page" resultMap="productDataStatisticsResultMap">
+		select * from 
+				statistics_data_product a where 1=1
+		<if test="pd.query_time_start!=null and pd.query_time_start!=''"><!-- 时间检索 -->
+			and a.create_time &gt;= #{pd.query_time_start}
+		</if>
+		<if test="pd.query_time_end!=null and pd.query_time_end!=''"><!-- 时间检索 -->
+			and a.create_time &lt;= #{pd.query_time_end}
+		</if>	
+		<if test="pd.query_key!=null and pd.query_key!=''"><!-- 关键字检索 -->
+			and a.name like concat('%',#{pd.query_key},'%')
+		</if>
+			order by a.create_time desc	
+	</select>
+	
+	<!-- 列表(全部) -->
+	<select id="listAll" parameterType="String" resultMap="productDataStatisticsResultMap">
+		select * from statistics_data_product a
+	</select>
+	
+	<!-- 批量删除 -->
+	<delete id="deleteBatch" parameterType="String">
+		delete from statistics_data_product
+		where 
+			id in
+		<foreach item="item" index="index" collection="array" open="(" separator="," close=")">
+                 #{item}
+		</foreach>
+	</delete>
+	
+<!-- 以下是产品数据统计所需 -->
+	
+	<!-- 获取年份列表 -->
+	<select id="yearList" parameterType="String" resultType="pd" >
+		SELECT
+			*
+		FROM
+		(
+			select 
+			DATE_FORMAT(a.browse_time ,'%Y') 'year'
+			from 
+			statistics_product_browse a
+			GROUP BY
+			a.browse_time
+		) b
+		GROUP BY
+			b.year
+		order by 
+			b.year
+	</select>
+	<!-- 统计产品浏览总次数-->
+	<select id="totalBrowseAmount" parameterType="DataReqItem4Browse" resultType="java.lang.Long" >
+		SELECT 
+			IFNULL(COUNT(b.year),'0') amount
+		FROM
+		(	
+		select 
+			DATE_FORMAT(a.browse_time,'%Y') 'year'
+			from 
+			statistics_product_browse a
+			where 
+			DATE_FORMAT(a.browse_time,'%Y') = #{year}
+		<if test="memberId!=null and memberId!=''">
+			and 
+			a.member_id = #{memberId}
+		</if>	
+		<if test="productId!=null and productId!=''">
+			and 
+			a.product_id = #{productId}
+		</if>	
+		)b
+			GROUP BY
+			b.year
+	</select>
+	<!-- 统计产品每月浏览次数-->
+	<select id="browseAmountByMonth" parameterType="DataReqItem4Browse" resultMap="productDataBrowseAmountListResultMap" >
+		SELECT 
+			COUNT(b.year) 'browse_amount',
+			b.year 'time_period'
+		FROM
+			(
+				select 
+				DATE_FORMAT(a.browse_time,'%Y%m') 'year'
+				from 
+				statistics_product_browse a
+				WHERE
+				DATE_FORMAT(a.browse_time,'%Y') = #{year}
+			<if test="memberId!=null and memberId!=''">
+				and 
+				a.member_id = #{memberId}
+			</if>	
+			<if test="productId!=null and productId!=''">
+				and 
+				a.product_id = #{productId}
+			</if>
+			) b
+		GROUP BY
+			b.year	
+	</select>
+	<!-- 统计产品每季度浏览次数-->
+	<select id="browseAmountBySeason" parameterType="DataReqItem4Browse" resultMap="productDataBrowseAmountListResultMap" >
+		SELECT 
+			CASE
+			when (month(a.browse_time)=01 or month(a.browse_time)=02 or month(a.browse_time)=03 )
+			then CONCAT(year(a.browse_time),"年一季度") 
+			when (month(a.browse_time)=04 or month(a.browse_time)=05 or month(a.browse_time)=06 )
+			THEN CONCAT(year(a.browse_time),"年二季度") 
+			when (month(a.browse_time)=07 or month(a.browse_time)=08 or month(a.browse_time)=09 )
+			THEN CONCAT(year(a.browse_time),"年三季度") 
+			when (month(a.browse_time)=10 or month(a.browse_time)=11 or month(a.browse_time)=12 )
+			THEN CONCAT(year(a.browse_time),"年四季度")
+			else "" end AS time_period,
+			count(1) 'browse_amount'
+		 FROM statistics_product_browse a
+		where
+		DATE_FORMAT(a.browse_time,'%Y')=#{year}
+	<if test="memberId!=null and memberId!=''">
+		and 
+		a.member_id = #{memberId}
+	</if>	
+	<if test="productId!=null and productId!=''">
+		and 
+		a.product_id = #{productId}
+	</if>
+		GROUP BY 
+			time_period
+		ORDER BY 
+			a.browse_time	
+	</select>
+	<!-- 统计产品每年不同用户类型浏览次数-->
+	<select id="browseOfMemberType4Year" parameterType="DataReqItem4Browse" resultMap="productDataBrowseAndTypeItemResultMap" >
+			SELECT
+				COUNT(1) 'value',
+				b.PROFESSION_SUP 'name'
+			FROM
+				statistics_product_browse a
+			LEFT JOIN
+				member b
+			ON
+			b.ID = a.member_id
+			WHERE
+				DATE_FORMAT(a.browse_time,'%Y') = #{year}
+			<if test="memberId!=null and memberId!=''">
+				and 
+				a.member_id = #{memberId}
+			</if>	
+			<if test="productId!=null and productId!=''">
+				and 
+				a.product_id = #{productId}
+			</if>
+			GROUP BY
+			b.PROFESSION_SUP
+	</select>
+<!-- 	<select id="browseOfMemberType4Year" parameterType="pd" resultType="java.lang.Long" >
+			SELECT
+			count(1) 'browse_amount'
+			FROM
+			statistics_product_browse a
+			LEFT JOIN
+			member b
+			ON
+			b.ID = a.member_id
+			WHERE
+			b.PROFESSION_SUP = #{memberType}
+			AND
+			DATE_FORMAT(a.browse_time,'%Y') = #{year}
+	</select> -->
+	<!-- 统计产品每年不同用户区域浏览次数-->
+	<select id="browseOfRegionType4Year" parameterType="DataReqItem4Browse" resultMap="productDataBrowseAndTypeItemResultMap" >
+			(	
+				SELECT
+					count(1) 'value',
+					b.ADDR_PROVINCE 'name'
+				FROM
+					statistics_product_browse a
+				LEFT JOIN
+					member b
+				ON
+					b.ID = a.member_id
+				where
+					DATE_FORMAT(a.browse_time,'%Y') = #{year}
+				<if test="memberId!=null and memberId!=''">
+					and 
+					a.member_id = #{memberId}
+				</if>	
+				<if test="productId!=null and productId!=''">
+					and 
+					a.product_id = #{productId}
+				</if>
+				GROUP BY 
+					b.ADDR_PROVINCE
+				ORDER BY value DESC	
+				LIMIT 10
+			)
+			union
+			(
+			SELECT
+			IFNULL(SUM(c.value),0) 'value',
+			'其它' 
+			FROM
+			(	
+			SELECT
+					count(1) 'value',
+					b.ADDR_PROVINCE 'name'
+				FROM
+					statistics_product_browse a
+				LEFT JOIN
+					member b
+				ON
+					b.ID = a.member_id
+				where
+					DATE_FORMAT(a.browse_time,'%Y') = #{year}
+				<if test="memberId!=null and memberId!=''">
+					and 
+					a.member_id = #{memberId}
+				</if>	
+				<if test="productId!=null and productId!=''">
+					and 
+					a.product_id = #{productId}
+				</if>
+				GROUP BY 
+					b.ADDR_PROVINCE
+				ORDER BY value DESC	
+				LIMIT 10,68
+			)c
+			)
+	</select>
+	<!-- 统计产品每年所有用户不同颜色类型浏览次数-->
+	<select id="browseOfColorType4Year" parameterType="DataReqItem4Browse" resultMap="productDataBrowseAndTypeItemResultMap" >
+		SELECT
+			COUNT(1) 'value',
+			c.color_name 'name'
+		FROM
+			statistics_product_browse a
+		LEFT JOIN
+			product_record_color b
+		ON 
+			b.product_id = a.product_id
+		LEFT JOIN
+			product_param_color c
+		ON
+			c.id = b.color_id
+		WHERE
+			DATE_FORMAT(a.browse_time,'%Y') = #{year}
+		<if test="memberId!=null and memberId!=''">
+			and 
+			a.member_id = #{memberId}
+		</if>	
+		<if test="productId!=null and productId!=''">
+			and 
+			a.product_id = #{productId}
+		</if>
+		GROUP BY
+			b.color_id
+	</select>
+	<!-- 统计产品每年所有用户不同风格类型浏览次数-->
+	<select id="browseOfStyleType4Year" parameterType="DataReqItem4Browse" resultMap="productDataBrowseAndTypeItemResultMap" >
+		SELECT
+			COUNT(1) 'value',
+			c.style_name 'name'
+		FROM
+			statistics_product_browse a
+		LEFT JOIN
+			product_record_style b
+		ON 
+			b.product_id = a.product_id
+		LEFT JOIN
+			product_param_style c
+		ON
+			c.id = b.style_id
+		WHERE
+			DATE_FORMAT(a.browse_time,'%Y') = #{year}
+		<if test="memberId!=null and memberId!=''">
+			and 
+			a.member_id = #{memberId}
+		</if>	
+		<if test="productId!=null and productId!=''">
+			and 
+			a.product_id = #{productId}
+		</if>
+		GROUP BY
+			b.style_id
+	</select>
+	<!-- 统计产品每年所有用户不同工艺类型浏览次数-->
+	<select id="browseOfCraftType4Year" parameterType="DataReqItem4Browse" resultMap="productDataBrowseAndTypeItemResultMap" >
+		SELECT
+			COUNT(1) 'value',
+			c.craft_name 'name'
+		FROM
+			statistics_product_browse a
+		LEFT JOIN 
+			product b
+		ON
+			b.id = a.product_id
+		LEFT JOIN
+			product_param_craft c
+		ON
+			c.id = b.product_craft
+		WHERE
+			DATE_FORMAT(a.browse_time,'%Y') = #{year}
+		<if test="memberId!=null and memberId!=''">
+			and 
+			a.member_id = #{memberId}
+		</if>	
+		<if test="productId!=null and productId!=''">
+			and 
+			a.product_id = #{productId}
+		</if>
+		GROUP BY
+			b.product_craft
+	</select>
+	<!-- 统计产品每年所有用户不同工艺类型浏览次数-->
+	<select id="browseOfMaterialType4Year" parameterType="DataReqItem4Browse" resultMap="productDataBrowseAndTypeItemResultMap" >
+		SELECT
+			COUNT(1) 'value',
+			c.material_name 'name'
+		FROM
+			statistics_product_browse a
+		LEFT JOIN 
+			product b
+		ON
+			b.id = a.product_id
+		LEFT JOIN
+			product_param_material c
+		ON
+			c.id = b.product_material
+		WHERE
+			DATE_FORMAT(a.browse_time,'%Y') =#{year}
+		<if test="memberId!=null and memberId!=''">
+			and 
+			a.member_id = #{memberId}
+		</if>	
+		<if test="productId!=null and productId!=''">
+			and 
+			a.product_id = #{productId}
+		</if>
+		GROUP BY
+			b.product_material
+	</select>
+		<!-- 统计产品每年所有用户不同风格类型浏览次数-->
+	<select id="browseOfApplicationType4Year" parameterType="DataReqItem4Browse" resultMap="productDataBrowseAndTypeItemResultMap" >
+		SELECT
+			COUNT(1) 'value',
+			c.application_name 'name'
+		FROM
+			statistics_product_browse a
+		LEFT JOIN
+			product_record_application b
+		ON 
+			b.product_id = a.product_id
+		LEFT JOIN
+			product_param_application c
+		ON
+			c.id = b.application_id
+		WHERE
+			DATE_FORMAT(a.browse_time,'%Y') = #{year}
+		<if test="memberId!=null and memberId!=''">
+			and 
+			a.member_id = #{memberId}
+		</if>	
+		<if test="productId!=null and productId!=''">
+			and 
+			a.product_id = #{productId}
+		</if>
+		GROUP BY
+			b.application_id
+	</select>
+		<!-- 统计产品浏览表格明细()-->
+	<select id="TableDetaillistPage" parameterType="page" resultMap="productDataTableDetailItemResultMap" >
+		SELECT
+			DATE_FORMAT(a.browse_time,'%Y%m%d') 'period',
+			COUNT(1) 'amount'
+		FROM
+			statistics_product_browse a
+		WHERE
+			DATE_FORMAT(a.browse_time,'%Y%m') IN 
+		<foreach item="item" index="index" collection="pd.time" open="(" separator="," close=")">
+                 ${item}
+		</foreach>
+		<if test="pd.productId != null and pd.productId != '' ">
+			AND
+			a.product_id = #{pd.productId}
+		</if>
+		<if test="pd.memberId != null and pd.memberId != '' ">
+			AND
+			a.member_id = #{pd.memberId}
+		</if>
+		GROUP BY
+			DATE_FORMAT(a.browse_time,'%Y%m%d')
+		ORDER BY
+			DATE_FORMAT(a.browse_time,'%Y%m%d')
+	</select>
+			<!-- 统计产品每年所有用户不同用户类型浏览次数明细-->
+	<select id="browseOfMemberTypeDetail4YearlistPage" parameterType="pd" resultMap="productDataBrowseAndTypeItemResultMap" >
+			SELECT
+				count(1) 'value',
+				b.PROFESSION_SUP 'name',
+				b.PROFESSION_SUB 'name1'
+			FROM
+				statistics_product_browse a
+			LEFT JOIN
+				member b
+			ON
+				b.ID = a.member_id
+			WHERE
+				DATE_FORMAT(a.browse_time,'%Y') = #{pd.year}
+		<if test="pd.memberId!=null and pd.memberId!=''">
+			and 
+			a.member_id = #{pd.memberId}
+		</if>	
+		<if test="pd.productId!=null and pd.productId!=''">
+			and 
+			a.product_id = #{pd.productId}
+		</if>
+			GROUP BY
+				b.PROFESSION_SUB
+	</select>
+			<!-- 统计产品每年所有用户不同区域类型浏览次数明细-->
+	<select id="browseOfRegionTypeDetail4YearlistPage" parameterType="pd" resultMap="productDataBrowseAndTypeItemResultMap" >
+		SELECT
+			count(1) 'value',
+			b.ADDR_PROVINCE 'name'
+		FROM
+			statistics_product_browse a
+		LEFT JOIN
+			member b
+		ON
+			b.ID = a.member_id
+		WHERE
+			DATE_FORMAT(a.browse_time,'%Y') = #{pd.year}
+		<if test="pd.memberId!=null and pd.memberId!=''">
+			and 
+			a.member_id = #{pd.memberId}
+		</if>	
+		<if test="pd.productId!=null and pd.productId!=''">
+			and 
+			a.product_id = #{pd.productId}
+		</if>
+		GROUP BY
+			b.ADDR_PROVINCE
+	</select>
+</mapper>

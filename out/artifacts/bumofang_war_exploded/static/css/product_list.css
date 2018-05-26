@@ -1,0 +1,22 @@
+.pop_dialog{
+	text-align: center;
+	padding:5px 5px 5px 5px;
+}
+
+.pop_dialog select{
+	width: 80%;
+    margin-top: 20px;
+
+}
+
+.add_member_cart_confirm
+{
+    margin:auto;
+    margin-top:20px;
+    background-color:#ddd;
+    border-radius:5px;
+    width:80%;
+    height:30px;
+    line-height: 20px;
+    border: 0px;
+}

@@ -1,0 +1,26 @@
+.pop_dialog{
+    background-color:#0a6999;
+}
+
+.pop_dialog li{
+    list-style: none;
+    float:left;
+    margin-left:20px;
+    width:420px;
+    height:330px;
+    background-color:#FFF;
+}
+
+.pop_dialog li .title{
+    height:30px;
+    line-height:30px;
+    text-align: center;
+}
+
+li > .picItem{
+    border: solid 1px #ddd;
+    border-radius: 12px;
+    padding: 10px;
+    width:420px;
+    height:300px;
+}

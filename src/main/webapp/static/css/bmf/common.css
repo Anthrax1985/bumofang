@@ -1,0 +1,36 @@
+.newspic {
+    display: block;
+    padding-bottom: 62.5%;
+    position: relative;
+    width: 100%;
+    overflow: hidden;
+}
+
+.newspic img {
+    position: absolute;
+    width: 100%;
+    top: 50%;
+    left: 50%;
+    -webkit-transform: translate3d(-50%, -50%, 0);
+    -moz-transform: translate3d(-50%, -50%, 0);
+    -ms-transform: translate3d(-50%, -50%, 0);
+    -o-transform: translate3d(-50%, -50%, 0);
+    transform: translate3d(-50%, -50%, 0);
+}
+
+.colorblock {
+    display: inline-block;
+    height: 1em;
+    width: 1em;
+}
+
+.col-sm-4{
+	width: 33.3333%
+}
+
+.col-sm-4 input{
+	width: 16px;
+    height: 16px;
+    display: inline-block;
+    line-height: 0;
+}

@@ -1,0 +1,526 @@
+html, body{
+	height:100%;
+	background-color:#ECF0F1;
+}
+
+*{
+    margin: 0;
+    padding: 0;
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    box-sizing: border-box;
+}
+
+.none{
+	display: none;
+	margin-top:10px;
+}
+
+.mt-30{
+	*padding-left:10px;/*IE7的Hack*/
+	*padding-right:10px;/*IE7的Hack*/
+}
+
+.pl-30{
+	padding-left: 30px;	
+}
+
+.overflow{
+	overflow: hidden;
+}
+
+.t_list {
+	clear:both;
+	margin-left:20px;
+	margin-right:20px;
+	margin-bottom:20px;
+}
+
+.t_list > h2{
+	font-size:18px;
+	font-weight: bold;	
+}
+
+.t_list > p {
+	padding-top:10px;
+	margin-bottom:15px;
+	width:100%;
+	border-bottom: solid 1px #ddd;
+}
+
+.t_list > p > i{
+	display: block;
+	float:left;
+	width:5px;
+	height:20px;
+	background-color: red;
+}
+
+.t_list > p > span{
+	display: block;
+	float:left;
+	
+	padding-left:10px;
+	padding-bottom:10px;
+	color:#AAB5BB;	
+}
+
+
+
+.t_list .t_table{	
+	position: relative;
+	width:100%;
+	padding:0px 15px 20px 15px;
+	*padding:0px 0px 20px 0px;
+	background-color:#FFF;
+	border-radius: 4px;
+}
+
+.t_table{
+	/*background:url(../img/bg_t_header.png) repeat-x*/
+}
+
+.t_list table{
+	width:100%;
+	z-index: 100;
+}
+
+
+.t_list th{
+	font-size:12px;
+	padding:0px 5px;
+	/*background-color:#34495e;*/
+	border-bottom: solid 1px #DDE1E2;
+	background-color:#FFF;
+	text-align: center;
+	vertical-align: middle;
+	color:#A8B1B0;
+	/*height:54px;*/
+	height:44px;
+}
+
+.t_list tr{
+	background-color:#FFF;
+	cursor:pointer;
+}
+
+.t_list tr:hover{
+	background-color:#ECF0F1;
+	cursor:pointer;
+}
+
+
+
+.t_list td{
+	font-size:12px;
+	padding:5px 5px;
+	*padding:5px 1px;
+	border-bottom: solid 1px #DDE1E2;
+	text-align: center;
+	vertical-align: middle;
+	color:#5b6269;
+	height:25px;
+	max-width: 100px;
+	
+}
+
+.t_list tr:hover td{
+	color:#000;
+}
+
+.opr{
+	text-align: center;
+}
+
+.opr div{
+	/*width:140px !important;*/
+	margin:auto;
+}
+
+.list_btn{
+	display: block;
+	float:left;
+	height: 20px;
+	width: 40px;
+	line-height: 20px;
+	font-size:12px;
+	margin-left: 10px;
+	cursor: pointer;
+}
+
+.del_usb{
+	width: 55px;
+	margin-left: 10px;
+}
+
+.del_all{
+	width: 55px;
+	margin-left: 10px;
+}
+
+.mark_ng{
+	width: 55px;
+	margin-left: 10px;
+}
+
+.check_ng{
+	width: 55px;
+	margin-left: 10px;
+}
+
+.btn{
+	display: block;
+	float:left;
+	line-height: 12px !important;
+	font-size:12px;
+	cursor: pointer;
+}
+
+
+/*查询条件*/
+.topbar{
+	position: fixed;
+	background-color: #FFF;
+	border-bottom: solid 1px #ddd;
+	height:57px;
+	width:100%;
+	top: 0px;
+	z-index: 1000;
+	overflow: hidden;
+}
+
+.topbar > ul{
+	list-style: none;
+	padding-left: 25px;
+	padding-right: 20px;
+	overflow: hidden;
+	height: 45px;
+}
+
+.topbar > ul > li{
+	list-style: none;
+	float:left;
+	line-height: 52px;
+	margin-right: 10px;
+	color:#787a7b;
+	font-size:12px;
+
+}
+
+.topbar_open{
+	height:77px;
+}
+
+.top-search{
+	margin: 14px 0 0 5px;
+    position: relative;
+}    
+
+.inp{
+	display: inline-block;
+    vertical-align: top;
+    width: 105px;
+    height: 25px;
+    line-height: 25px;
+    border: none;
+    border-radius: 2px;
+    padding: 0 15px 0 5px;
+    border: solid 1px #ddd;
+}
+
+.s_btn{
+	display: inline-block;
+    vertical-align: top;
+    width: auto;
+    height: 25px;
+    border: none;
+    border-radius: 4px;
+    padding: 0 15px 0 15px;
+    background-color: #5eb95e;
+    line-height: 25px;
+    text-align: center;
+    color: #FFF;
+    font-size:12px;
+}
+
+.s_btn:hover{
+	color: #FFF;
+	background-color: #098e1f;
+}
+
+.yellow:hover{
+	background-color:#9c6e0d;
+}
+
+.yellow{
+	background-color:#f3a602;
+}
+
+.top-adv{
+	overflow: hidden;
+	margin-left:22px;
+	color: #787a7b;
+    font-size: 12px;
+}
+
+.top-adv li{
+	float:left;
+	line-height: 22px;
+	margin-right:4px;
+}
+
+.top-adv .top-search {
+    margin: 0px 0 0 5px;
+    position: relative;
+}
+
+.container-full{
+	margin-left:0px;
+	margin-top:0px;
+	padding-top:0px;
+	padding-left:0px;
+}
+
+.s_add{
+	width:22px;
+	height:22px;
+	background: url(../img/s_add.png);
+	cursor: pointer;	
+}
+
+.t_add{
+	position: absolute;
+	opacity:1;
+	width:100%;
+	background-color: #FFF;
+	height:100%;
+	display: block;
+	padding-top:15px;
+}
+
+.show_page{
+	display: block;
+}
+
+.select {
+	display: block;
+    border: solid 1px #ddd;
+    box-sizing: border-box;
+    cursor: pointer;
+    line-height: 25px;
+    width: 100%;
+    height:25px !important;
+    white-space: nowrap;
+    border: 1px solid #dedede;
+    border-radius: 5px;
+}
+
+.t_add  .select{
+	width:200px;
+}
+
+.topbar  .select{
+	width:80px;
+	font-size:18px;
+	color:#787a7b;
+}
+
+.form-horizontal .Validform_checktip {
+    
+    padding-left: 0px;
+    /*
+	margin-top: 5px;
+    margin-left: -25px;*/
+}
+
+.Validform_wrong, .Validform_right, .Validform_warning {
+    display: inline;
+    height: 15px;
+    line-height: 15px;
+}
+
+.color_box{
+	width:15px;
+	height:15px;
+	margin:auto;
+}
+
+/*把它放到最前面，要不然会被头部遮住*/
+.palette-color-picker-bubble {   
+    z-index: 20000;
+    top: 16px;
+    bottom: auto !important;
+    width: 220px !important;
+}
+
+.cell_list{
+	list-style: none;
+}
+
+.cell_list li{
+	position: relative;
+	list-style: none;
+	float:left;
+	margin-right: 40px;
+	width: 75px;
+	height: 90px;
+	cursor: pointer;
+}
+
+.cell_list li img{	
+	display: block;
+	list-style: none;
+	/*float:left;*/
+	margin-right: 40px;
+	width:50px;
+	height:50px;
+	margin-left: 20px;
+}
+
+.cell_list li div{
+	display: block;
+	height:20px;
+}
+
+.cell_list li span.status
+{
+	background-color:#FFF;	
+}
+
+.cell_list li .chk{	
+	display: none;
+}
+
+
+
+.cell_list li span{
+	list-style: none;
+	float:right;
+	width:60px;	
+	text-align: center;
+}
+
+.folder_div{
+	margin-top:30px;
+	margin-left:40px;	
+}
+
+.folder_div img{
+	cursor: pointer;
+}
+
+.folder_div span{
+	cursor: pointer;
+}
+
+.sel_user_div{
+	margin-top:25px;
+	margin-left:40px;
+}
+
+.type_select_box{
+	width:100px;
+	height:24px !important;
+	line-height: 24px;
+}
+
+.type_select_box option{
+	width:100px;
+	height:24px !important;	
+	line-height: 24px;
+}
+
+.doctor_select_box{
+	margin-left:20px;
+	width:100px;
+	height:24px !important;	
+	line-height: 24px;
+}
+
+.doctor_select_box option{
+	width:100px;
+	height:24px !important;	
+	line-height: 24px;
+}
+
+
+
+.export_btn{
+	position: absolute;
+	float:left;
+	width:80px;
+	height:25px;
+	line-height: 25px;
+	border-radius: 4px;
+	background-color:#DDD;
+	left:280px;
+	top:75px;
+	text-align: center;
+	cursor:pointer;
+}
+
+
+.import_folder_div{
+	margin-top:30px;
+	margin-left:40px;	
+}
+
+.import_folder_div img{
+	cursor: pointer;
+}
+
+.import_folder_div span{
+	cursor: pointer;
+}
+
+.import_btn{
+	position: absolute;
+	float:left;
+	width:80px;
+	height:25px;
+	line-height: 25px;
+	border-radius: 4px;
+	background-color:#DDD;
+	left:40px;
+	top:75px;
+	text-align: center;
+	cursor:pointer;
+}
+
+
+.select_mode{
+	margin-top:20px;
+	width:22px;
+	height:22px;
+	background: url(../img/select_mode.png);
+	cursor: pointer;
+}
+
+.submit{
+	margin-top:20px;
+	width:22px;
+	height:22px;
+	background: url(../img/submit.png);
+	cursor: pointer;
+}
+
+.Wdate {
+    margin-left: 5px;
+    margin-right: 4px;
+}
+
+.export_mark{
+	width:30px;
+	height:30px;
+	cursor: pointer;
+	float:right;
+	background: url(../img/export_mark.png) no-repeat;
+}
+
+.export_mark:hover{
+	width:30px;
+	height:30px;
+	cursor: pointer;
+	float:right;
+	background-color:#ddd;
+}

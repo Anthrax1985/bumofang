@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE configuration PUBLIC "-//mybatis.org//DTD SQL Map Config 3.0//EN"  
+	"http://mybatis.org/dtd/mybatis-3-config.dtd">
+<configuration>
+	
+	<settings> 
+        <setting name="cacheEnabled" value="true" /><!-- 全局映射器启用缓存 -->   
+        <setting name="useGeneratedKeys" value="true" /> 
+        <setting name="defaultExecutorType" value="REUSE" /> 
+    </settings>
+
+	<typeAliases>
+		<typeAlias type="com.fh.entity.system.User" alias="User"/>
+		<typeAlias type="com.fh.entity.system.Role" alias="Role"/>
+		<typeAlias type="com.fh.entity.system.Menu" alias="Menu"/>
+		<typeAlias type="com.fh.util.PageData" alias="pd"/>
+		<typeAlias type="com.fh.entity.bmf.syslog.SysLog" alias="SysLog"/>
+		<typeAlias type="com.fh.entity.bmf.product.Product" alias="Product"/>
+		<typeAlias type="com.fh.entity.bmf.chinadivision.ChinaDivision" alias="ChinaDivision"/>
+		<typeAlias type="com.fh.entity.bmf.productparam.ProductParamColor" alias="ProductParamColor"/>
+		<typeAlias type="com.fh.entity.bmf.productparam.ProductParamStyle" alias="ProductParamStyle"/>
+		<typeAlias type="com.fh.entity.bmf.productparam.ProductParamCraft" alias="ProductParamCraft"/>
+		<typeAlias type="com.fh.entity.bmf.productparam.ProductParamMaterial" alias="ProductParamMaterial"/>
+		<typeAlias type="com.fh.entity.bmf.productparam.ProductParamApplication" alias="ProductParamApplication"/>
+		<typeAlias type="com.fh.entity.bmf.productparam.ProductParamWashingMethod" alias="ProductParamWashingMethod"/>
+		<typeAlias type="com.fh.entity.bmf.productrecord.ProductRecordColor" alias="ProductRecordColor"/>
+		<typeAlias type="com.fh.entity.bmf.productrecord.ProductRecordStyle" alias="ProductRecordStyle"/>
+		<typeAlias type="com.fh.entity.bmf.productrecord.ProductRecordApplication" alias="ProductRecordApplication"/>
+		<typeAlias type="com.fh.entity.bmf.productrecord.ProductRecordWashingMethod" alias="ProductRecordWashingMethod"/>
+		<typeAlias type="com.fh.entity.bmf.productrecord.ProductRecordMatchScheme" alias="ProductRecordMatchScheme"/>
+		<typeAlias type="com.fh.entity.bmf.productrecord.ProductMatchSchemeItem" alias="ProductMatchSchemeItem"/>
+		<typeAlias type="com.fh.entity.bmf.member.MemberFavorProduct" alias="MemberFavorProduct"/>
+		<typeAlias type="com.fh.entity.bmf.member.MemberProfessionSub" alias="MemberProfessionSub"/>
+		<typeAlias type="com.fh.entity.bmf.member.MemberProfessionSup" alias="MemberProfessionSup"/>
+		<typeAlias type="com.fh.entity.bmf.member.MemberMoney" alias="MemberMoney"/>
+		<typeAlias type="com.fh.entity.bmf.member.MemberMoneyDetail" alias="MemberMoneyDetail"/>
+		<typeAlias type="com.fh.entity.bmf.member.Member3DMatchMethod" alias="Member3DMatchMethod"/>
+		<typeAlias type="com.fh.entity.bmf.member.MemberCart" alias="MemberCart"/>
+		<typeAlias type="com.fh.entity.bmf.statistics.ProductBrowse" alias="ProductBrowse"/>
+		<typeAlias type="com.fh.entity.bmf.datacenter.ProductDataStatistics" alias="ProductDataStatistics"/>
+		<typeAlias type="com.fh.entity.bmf.message.MessageMember" alias="MessageMember"/>
+		<typeAlias type="com.fh.entity.bmf.message.MessageSystem" alias="MessageSystem"/>
+		<typeAlias type="com.fh.entity.bmf.message.MessageSystemDeleteRecord" alias="MessageSystemDeleteRecord"/>
+		
+		<typeAlias type="com.fh.entity.bmf.app.ProductResItem" alias="ProductResItem"/>
+		<typeAlias type="com.fh.entity.bmf.app.SelectProductReq" alias="SelectProductReq"/>
+		<!-- 以下是数据统计所需实体类 -->
+		<typeAlias type="com.fh.entity.bmf.datacenter.ProductDataBrowseAmountList" alias="ProductDataBrowseAmountList"/>
+		<typeAlias type="com.fh.entity.bmf.datacenter.ProductDataBrowseAndTypeItem" alias="ProductDataBrowseAndTypeItem"/>
+		<typeAlias type="com.fh.entity.bmf.datacenter.ProductDataTableDetailItem" alias="ProductDataTableDetailItem"/>
+		<typeAlias type="com.fh.entity.bmf.datacenter.DataReqItem4Browse" alias="DataReqItem4Browse"/>
+		
+				<typeAlias type="com.fh.entity.bmf.product.ProductEviNameAsso" alias="ProductEviNameAsso"/>
+		<!-- 分页 -->
+		<typeAlias type="com.fh.entity.Page" alias="Page"/>
+	</typeAliases>
+	
+	<plugins>
+		<plugin interceptor="com.fh.plugin.PagePlugin">
+			<property name="dialect" value="mysql"/>
+			<property name="pageSqlId" value=".*listPage.*"/>
+		</plugin>
+	</plugins>
+	
+</configuration>

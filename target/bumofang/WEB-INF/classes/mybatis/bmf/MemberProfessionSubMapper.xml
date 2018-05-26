@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="MemberProfessionSubMapper">
+	<resultMap type="MemberProfessionSub" id="memberProfessionSubResultMap">
+		<id column="id" property="id"/>
+		<result column="profession_sup_id" property="professionSupId"/>
+		<result column="profession_sup_name" property="professionSupName"/>
+		<result column="profession_sub_name" property="professionSubName"/>
+		<result column="list_order" property="listOrder"/>
+		<result column="create_user_id" property="createUserId"/>
+		<result column="create_time" property="createTime"/>
+	</resultMap>
+	
+	<!-- 新增-->
+	<insert id="save" parameterType="MemberProfessionSub" useGeneratedKeys="true" keyProperty="id">
+		insert into member_profession_sub(
+			profession_sup_id,
+			profession_sup_name,
+			profession_sub_name,
+			list_order,
+			create_user_id,
+			create_time
+		) values (
+			#{professionSupId},
+			#{professionSupName},
+			#{professionSubName},
+			#{listOrder},
+			#{createUserId},
+			#{createTime}
+		)
+	</insert>
+	
+	<!-- 删除-->
+	<delete id="delete" parameterType="java.lang.Long">
+		delete from member_profession_sub
+		where 
+			id = #{value}
+	</delete>
+
+	<!-- 修改 -->
+	<update id="edit" parameterType="MemberProfessionSub">
+		update member_profession_sub
+			set 
+			<if test="professionSupId!=null">
+				profession_sup_id = #{professionSupId},
+			</if>
+			<if test="professionSupName!=null and professionSupName!=''">
+				profession_sup_name = #{professionSupName},
+			</if>
+			<if test="professionSubName!=null and professionSubName!=''">
+				profession_sub_name = #{professionSubName},
+			</if>
+			<if test="listOrder!=null">
+				list_order = #{listOrder},
+			</if>
+			id = id
+			where 
+				id = #{id}
+	</update>
+	
+	
+	<!-- 通过id获取数据 -->
+	<select id="findById" parameterType="java.lang.Long" resultMap="memberProfessionSubResultMap">
+		select * from 
+			member_profession_sub
+		where 
+			id = #{value}
+	</select>
+	
+	<!-- 修改 -->
+	<select id="findByCondition" parameterType="MemberProfessionSub" resultMap="memberProfessionSubResultMap">
+		select * from 
+			member_profession_sub where 1=1
+			<if test="createUserId!=null and createUserId!=''">
+				and create_user_id = #{createUserId}
+			</if>
+			<if test="professionSupId!=null">
+				and profession_sup_id = #{professionSupId}
+			</if>
+			<if test="professionSupName!=null and professionSupName!=''">
+				and profession_sup_name = #{professionSupName}
+			</if>
+			<if test="professionSubName!=null and professionSubName!=''">
+				and profession_sub_name = #{professionSubName}
+			</if>
+			<if test="listOrder!=null">
+				and list_order = #{listOrder}
+			</if>
+			order by list_order asc
+	</select>
+	
+	<!-- 列表 -->
+	<select id="datalistPage" parameterType="page" resultMap="memberProfessionSubResultMap">
+		select * from 
+				member_profession_sub a where 1=1
+		<if test="pd.query_time_start!=null and pd.query_time_start!=''"><!-- 时间检索 -->
+			and a.create_time &gt;= #{pd.query_time_start}
+		</if>
+		<if test="pd.query_time_end!=null and pd.query_time_end!=''"><!-- 时间检索 -->
+			and a.create_time &lt;= #{pd.query_time_end}
+		</if>	
+		<if test="pd.query_key!=null and pd.query_key!=''"><!-- 关键字检索 -->
+			and a.name like concat('%',#{pd.query_key},'%')
+		</if>
+			order by a.create_time desc	
+	</select>
+	
+	<!-- 列表(全部) -->
+	<select id="listAll" parameterType="String" resultMap="memberProfessionSubResultMap">
+		select * from member_profession_sub a
+	</select>
+	
+	<!-- 批量删除 -->
+	<delete id="deleteBatch" parameterType="String">
+		delete from member_profession_sub
+		where 
+			id in
+		<foreach item="item" index="index" collection="array" open="(" separator="," close=")">
+                 #{item}
+		</foreach>
+	</delete>
+	
+</mapper>

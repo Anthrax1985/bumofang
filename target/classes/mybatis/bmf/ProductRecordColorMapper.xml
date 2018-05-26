@@ -1,0 +1,139 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="ProductRecordColorMapper">
+	<resultMap type="ProductRecordColor" id="productRecordColorResultMap">
+		<id column="id" property="id"/>
+		<result column="product_id" property="productId"/>
+		<result column="color_id" property="colorId"/>
+		<result column="create_user_id" property="createUserId"/>
+		<result column="create_time" property="createTime"/>
+	</resultMap>
+	
+	<!-- 新增-->
+	<insert id="save" parameterType="ProductRecordColor" useGeneratedKeys="true" keyProperty="id">
+		insert into product_record_color(
+			product_id,
+			color_id,
+			create_user_id,
+			create_time
+		) values (
+			#{productId},
+			#{colorId},
+			#{createUserId},
+			#{createTime}
+		)
+	</insert>
+	
+	<!-- 删除-->
+	<delete id="delete" parameterType="java.lang.Long">
+		delete from product_record_color
+		where 
+			id = #{value}
+	</delete>
+
+	<!-- 修改 -->
+	<update id="edit" parameterType="ProductRecordColor">
+		update product_record_color
+			set 
+			<if test="productId!=null">
+				product_id = #{productId},
+			</if>
+			<if test="colorId!=null">
+				color_id = #{colorId},
+			</if>
+			id = id
+			where 
+				id = #{id}
+	</update>
+	
+	
+	<!-- 通过id获取数据 -->
+	<select id="findById" parameterType="java.lang.Long" resultMap="productRecordColorResultMap">
+		select * from 
+			product_record_color
+		where 
+			id = #{value}
+	</select>
+	
+	<!-- 修改 -->
+	<select id="findByCondition" parameterType="ProductRecordColor" resultMap="productRecordColorResultMap">
+		select * from 
+			product_record_color where 1=1
+			<if test="createUserId!=null and createUserId!=''">
+				and create_user_id = #{createUserId}
+			</if>
+			<if test="productId!=null">
+				and product_id = #{productId}
+			</if>
+			<if test="colorId!=null">
+				and color_id = #{colorId}
+			</if>
+	</select>
+	
+	<!-- 列表 -->
+	<select id="datalistPage" parameterType="page" resultMap="productRecordColorResultMap">
+		select * from 
+				product_record_color a where 1=1
+		<if test="pd.query_time_start!=null and pd.query_time_start!=''"><!-- 时间检索 -->
+			and a.create_time &gt;= #{pd.query_time_start}
+		</if>
+		<if test="pd.query_time_end!=null and pd.query_time_end!=''"><!-- 时间检索 -->
+			and a.create_time &lt;= #{pd.query_time_end}
+		</if>	
+		<if test="pd.query_key!=null and pd.query_key!=''"><!-- 关键字检索 -->
+			and a.name like concat('%',#{pd.query_key},'%')
+		</if>
+			order by a.create_time desc	
+	</select>
+	
+	<!-- 列表(全部) -->
+	<select id="listAll" parameterType="String" resultMap="productRecordColorResultMap">
+		select * from product_record_color a
+	</select>	
+	<!-- 批量删除 -->
+	<delete id="deleteBatch" parameterType="String">
+		delete from product_record_color
+		where 
+			id in
+		<foreach item="item" index="index" collection="array" open="(" separator="," close=")">
+                 #{item}
+		</foreach>
+	</delete>
+	
+	<!-- 删除某一个产品的颜色信息 -->
+	<delete id="deleteProductColor" parameterType="java.lang.Long">
+		delete from product_record_color
+		where 
+			product_id =#{productId}
+	</delete>
+	
+	<!-- 获取某个产品的颜色Icon，供产品列表悬浮展示-->
+	<select id="listColorIconOfProduct" parameterType="Long" resultType="pd">
+		SELECT
+			a.id,
+			b.color_name,
+			b.color_icon
+		FROM
+			product_record_color a
+		LEFT JOIN
+			product_param_color b
+		ON
+			b.id = a.color_id
+		WHERE
+			a.product_id =#{value}
+	</select>
+	
+	<!-- 获取某个产品的颜色Icon，供产品列表悬浮展示-->
+	<select id="listColorWithProduct" parameterType="pd" resultType="pd">
+	SELECT
+			b.color_name
+		FROM
+			product_record_color a
+		LEFT JOIN
+			product_param_color b
+		ON
+			b.id = a.color_id
+		WHERE
+			a.product_id =#{product_id}
+	</select>
+</mapper>

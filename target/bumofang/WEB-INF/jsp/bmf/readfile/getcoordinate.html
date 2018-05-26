@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Insert title here</title>
+	<script type="text/javascript" src="jquery.min.js"></script>
+</head>
+<body>
+<div>
+	<input type="text" id="X1" placeholder="X1" >
+	<input type="text" id="Y1" placeholder="Y1" >
+	<input type="text" id="X2" placeholder="X2" >
+	<input type="text" id="Y2" placeholder="Y2" >
+</div>
+<div>
+	<button value="getCoordinate" id="getCoordinate">getCoordinate</button>
+	<span id="result"></span>
+</div>
+<script type="text/javascript">
+	$("#getCoordinate").click(function(){
+		var result = $("#X1").val()/800;
+		alert();
+		$("#result").html(result);
+		
+	})
+	
+</script>
+</body>
+</html>

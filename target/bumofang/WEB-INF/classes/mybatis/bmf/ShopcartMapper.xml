@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="ShopcartMapper">
+	
+	
+	<!-- 新增-->
+	<insert id="save" parameterType="pd">
+		insert into shopcart(
+			fabric_id,
+			amount,
+			unit_price,
+			total_price,
+			buy_id,
+			status,
+			create_time,
+			update_time
+		) values (
+			#{fabric_id},
+			#{amount},
+			#{unit_price},
+			#{total_price},
+			#{buy_id},
+			#{status},
+			#{create_time},
+			#{update_time}
+		)
+	</insert>
+	
+	
+	<!-- 删除-->
+	<delete id="delete" parameterType="pd">
+		delete from shopcart
+		where 
+			id = #{id}
+	</delete>
+	
+	
+	<!-- 修改 -->
+	<update id="edit" parameterType="pd">
+		update  shopcart
+			set 
+				amount = #{amount},
+				status = #{status},
+				update_time = #{update_time},
+			id = id
+			where 
+				id = #{id}
+	</update>
+	
+	
+	<!-- 通过id获取数据 -->
+	<select id="findById" parameterType="pd" resultType="pd">
+		select * from 
+			shopcart
+		where 
+			id = #{id}
+	</select>
+	
+	
+	<!-- 列表 -->
+	<select id="datalistPage" parameterType="page" resultType="pd">
+		select * from 
+				shopcart a
+	</select>
+	
+	<!-- 列表(全部) -->
+	<select id="listAll" parameterType="pd" resultType="pd">
+		select * from 
+				shopcart a
+	</select>
+	
+	<!-- 列表(全部) -->
+	<select id="listByCondition" parameterType="pd" resultType="pd">
+		select * from 
+				shopcart a where 1=1
+		<if test="userId != null and userId != ''">
+			and a.buy_id=#{userId}
+		</if>		
+		<if test="fabricId != null and fabricId != ''">
+			and a.fabric_id=#{fabricId}
+		</if>		
+	</select>
+	
+	<select id="listWithFabricByCondition" parameterType="pd" resultType="pd">
+		select a.id, a.fabric_id, a.create_time, a.amount, (a.amount * b.price) total_price, 
+		b.name, b.art_picture image_url, b.price unit_price, b.price price from 
+		shopcart a, fabric b where a.fabric_id=b.id and 1=1
+		<if test="userId != null and userId != ''">
+			and a.buy_id=#{userId}
+		</if>		
+		<if test="ids != null and ids != ''">
+			and a.id in
+			<foreach item="item" index="index" collection="ids" open="(" separator="," close=")">
+	                 #{item}
+			</foreach>
+		</if>
+		order by a.create_time desc
+ 	</select>
+	
+	<!-- 批量删除 -->
+	<delete id="deleteAll" parameterType="String">
+		delete from shopcart
+		where 
+			id in
+		<foreach item="item" index="index" collection="array" open="(" separator="," close=")">
+                 #{item}
+		</foreach>
+	</delete>
+	
+</mapper>

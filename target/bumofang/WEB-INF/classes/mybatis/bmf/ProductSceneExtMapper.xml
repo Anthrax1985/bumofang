@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="ProductSceneExtMapper">
+
+	<!-- 根据创建时间返回产品场景的图片 -->
+	<select id="selectByTime" parameterType="pd" resultType="pd">
+		select * from product_scene_ext a 
+		where a.create_time > #{create_time} 
+		limit 0,100
+	</select>
+	
+</mapper>

@@ -1,0 +1,19 @@
+.fl{
+  float:left;
+}
+
+
+.fr{
+  float:right;
+}
+
+.add_order{
+	border:solid 1px #ddd;
+	border-radius:5px;
+	padding:2px 2px 2px 2px;
+	background-color:#004000;
+	color:#ffffff;
+	cursor:pointer;
+	width:80px;
+	text-align: center;
+}

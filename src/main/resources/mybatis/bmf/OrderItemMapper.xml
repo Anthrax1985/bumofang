@@ -1,0 +1,221 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="OrderItemMapper">
+
+
+	<!-- 新增 -->
+	<insert id="save" parameterType="pd">
+		insert into order_item(
+		fabric_id,
+		order_num,
+		amount,
+		unit_price,
+		total_price,
+		real_pay,
+		discount,
+		buy_id,
+		remark
+		) values (
+		#{fabric_id},
+		#{order_num},
+		#{amount},
+		#{unit_price},
+		#{total_price},
+		#{real_pay},
+		#{discount},
+		#{buy_id},
+		#{remark}
+		)
+	</insert>
+
+
+	<!-- 新增 -->
+	<insert id="save1" parameterType="pd">
+		insert into order_item(
+		fabric_id,
+		order_num,
+		amount,
+		meter,
+		option_id,
+		unit_price,
+		total_price,
+		real_pay,
+		discount,
+		buy_id,
+		remark,
+		use_for
+		) values (
+		#{fabric_id},
+		#{order_num},
+		#{amount},
+		#{meter},
+		#{option_id},
+		#{unit_price},
+		#{total_price},
+		#{real_pay},
+		#{discount},
+		#{buy_id},
+		#{remark},
+		#{use_for}
+		)
+	</insert>
+
+
+	<!-- 删除 -->
+	<delete id="delete" parameterType="pd">
+		delete from order_item
+		where
+		id = #{id}
+	</delete>
+
+
+	<!-- 修改 -->
+	<update id="edit" parameterType="pd">
+		update order_item
+		set
+		fabric_id = #{fabric_id},
+		amount = #{amount},
+		unit_price = #{unit_price},
+		total_price = #{total_price},
+		real_pay = #{real_pay},
+		status = #{status},
+		discount = #{discount},
+		buy_id = #{buy_id},
+		remark = #{remark},
+		id = id
+		where
+		id = #{id}
+	</update>
+	
+	<update id="editByOrderId" parameterType="pd">
+		update order_item 
+		set 
+			real_pay = total_price,
+		  	status = #{status}
+		where 
+		order_num = #{orderId}
+	</update>
+	
+	<update id="editByOrderId2" parameterType="pd">
+		update order_item 
+		set 
+		  	status = #{status}
+		where 
+		order_num = #{num}
+	</update>
+
+
+	<!-- 通过id获取数据 -->
+	<select id="findById" parameterType="pd" resultType="pd">
+		select *
+		from
+		order_item
+		where
+		id = #{id}
+	</select>
+	
+	<!-- 通过id获取数据 -->
+	<!--<select id="findByOrderId" parameterType="pd" resultType="pd">-->
+		<!--select -->
+			<!--a.id,-->
+			<!--a.order_num,-->
+			<!--a.fabric_id,-->
+			<!--a.amount, a.meter, a.option_id, a.unit_price, a.total_price, a.`status`, a.discount,-->
+			<!--b.product_name, b.product_wide_price, b.product_wide_price, b.product_component, b.product_unit_weight, -->
+			<!--b.product_narrow_width, b.product_wide_width, b.pattern_horizontal_size, b.pattern_vertical_size, b.product_source_area, -->
+			<!--b.pattern_picture1,-->
+			<!--b.pattern_picture2,-->
+			<!--b.quality_picture1,-->
+			<!--b.quality_picture2 ,-->
+			<!--b.quality_picture3,-->
+			 <!--b.quality_picture4,-->
+			<!--c.craft_name,d.material_name,n.color_name,n.color_icon-->
+		<!--from-->
+			<!--order_item a, product b, product_param_craft c, product_param_material d, product_record_color m, product_param_color n-->
+		<!--where order_num = #{orderId}-->
+		<!--and a.fabric_id = b.id -->
+		<!--and b.product_craft = c.id -->
+		<!--and b.product_material = d.id-->
+		<!--and a.fabric_id = m.product_id-->
+		<!--and m.color_id = n.id-->
+	<!--</select>-->
+
+	<select id="findByOrderId" parameterType="pd" resultType="pd">
+		select
+		a.id, a.use_for, a.order_num, a.fabric_id, a.amount, a.meter, a.option_id, a.unit_price, a.total_price, a.`status`, a.discount,
+		b.product_name, b.product_wide_price, b.product_wide_price, b.product_component, b.product_unit_weight,
+		b.product_narrow_width, b.product_wide_width, b.pattern_horizontal_size, b.pattern_vertical_size, b.product_source_area,
+		CONCAT(IFNULL(b.product_name, ''), '-Q2.jpg') as pattern_picture1,
+		CONCAT(IFNULL(b.product_name, ''), '-Q2.jpg') as pattern_picture2,
+		CONCAT(IFNULL(b.product_name, ''), '-Q2.jpg') as quality_picture1,
+		CONCAT(IFNULL(b.product_name, ''), '-Q2.jpg') as quality_picture2 ,
+		CONCAT(IFNULL(b.product_name, ''), '-Q2.jpg') as quality_picture3,
+		CONCAT(IFNULL(b.product_name, ''), '-Q2.jpg') as quality_picture4,
+		group_concat(distinct c.craft_name) as craft_name,group_concat(distinct d.material_name) as material_name,group_concat(distinct n.color_name) as color_name,group_concat(distinct n.color_icon) as color_icon,
+		b.product_upload_time as productUploadTime
+		from
+		order_item a
+		LEFT JOIN product b on a.fabric_id = b.id
+		LEFT JOIN product_param_craft c on b.product_craft = c.id
+		LEFT JOIN product_param_material d on b.product_material = d.id
+		LEFT JOIN product_record_color m on a.fabric_id = m.product_id
+		LEFT JOIN product_param_color n on m.color_id = n.id
+		where a.order_num = #{orderId}
+		group by a.fabric_id
+	</select>
+
+
+	<!-- 列表 -->
+	<select id="datalistPage" parameterType="page" resultType="pd">
+		select * from
+		order_item a
+	</select>
+
+	<select id="listWithFabricByCondition" parameterType="pd"
+		resultType="pd">
+		select a.amount, b.name, b.color, b.ingredients, b.art_picture
+		image_url, b.price from
+		order_item a, fabric b where a.fabric_id=b.id and 1=1
+		<if test="userId != null and userId != ''">
+			and a.buy_id=#{userId}
+		</if>
+		<if test="status != null and status != ''">
+			and a.status=#{status}
+		</if>
+		<if test="orderNum != null and orderNum != ''">
+			and a.order_num=#{orderNum}
+		</if>
+		<if test="ids != null and ids != ''">
+			and a.id in
+			<foreach item="item" index="index" collection="ids" open="("
+				separator="," close=")">
+				#{item}
+			</foreach>
+		</if>
+		<if test="orderNums != null and orderNums != ''">
+			and a.order_num in
+			<foreach item="item" index="index" collection="orderNums"
+				open="(" separator="," close=")">
+				#{item}
+			</foreach>
+		</if>
+	</select>
+
+	<!-- 列表(全部) -->
+	<select id="listAll" parameterType="pd" resultType="pd">
+		select * from
+		order_item a
+	</select>
+
+	<!-- 批量删除 -->
+	<delete id="deleteAll" parameterType="String">
+		delete from order_item
+		where
+		id in
+		<foreach item="item" index="index" collection="array" open="("
+			separator="," close=")">
+			#{item}
+		</foreach>
+	</delete>
+
+</mapper>

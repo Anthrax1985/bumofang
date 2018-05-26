@@ -1,0 +1,225 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="OrdersMapper">
+
+
+	<!-- 新增 -->
+	<insert id="save" parameterType="pd">
+		insert into orders(
+			num,
+			buy_id,
+			total_price,
+			real_pay,
+			discount,
+			coupon_id,
+			receiver_id,
+			express_id,
+			express_name,
+			create_time,
+			pay_time,
+			pay_way,
+			pay_account,
+			remark,
+			nickname,
+			mobile
+		) values (
+			#{num},
+			#{buy_id},
+			#{total_price},
+			#{real_pay},
+			#{discount},
+			#{coupon_id},
+			#{receiver_id},
+			#{express_id},
+			#{express_name},
+			#{create_time},
+			#{pay_time},
+			#{pay_way},
+			#{pay_account},
+			#{remark},
+			#{nickname},
+			#{mobile}
+		)
+	</insert>
+
+
+	<!-- 删除 -->
+	<delete id="delete" parameterType="pd">
+		delete from orders
+		where
+		id = #{id}
+	</delete>
+
+
+	<!-- 修改 -->
+	<update id="edit" parameterType="pd">
+		update orders
+		set
+		num = #{num},
+		buy_id = #{buy_id},
+		total_price = #{total_price},
+		real_pay = #{real_pay},
+		discount = #{discount},
+		coupon_id = #{coupon_id},
+		receiver_id = #{receiver_id},
+		express_id = #{express_id},
+		express_name = #{express_name},
+		status = #{status},
+		create_time = #{create_time},
+		pay_time = #{pay_time},
+		pay_way = #{pay_way},
+		pay_account = #{pay_account},
+		remark = #{remark},
+		id = id
+		where
+		id = #{id}
+	</update>
+
+	<update id="editByOrderId" parameterType="pd">
+		update orders
+		set
+		real_pay = #{real_pay},
+		status = #{status},
+		pay_time = #{pay_time},
+		pay_way = #{pay_way},
+		pay_account = #{pay_account}
+		where
+		num = #{orderId}
+	</update>
+
+	<update id="setStatus" parameterType="pd">
+		update orders
+		set
+		status = #{status}
+		where
+		id = #{orderId}
+	</update>
+
+	<update id="setStatusByNum" parameterType="pd">
+		update orders
+		set
+		status = #{status}
+		where
+		num = #{num}
+	</update>
+
+
+	<!-- 通过id获取数据 -->
+	<select id="findById" parameterType="pd" resultType="pd">
+		select *
+		from
+		orders
+		where
+		id = #{id}
+	</select>
+
+	<!--通过Id获取member数据 -->
+	<select id="findWithMemberById" parameterType="pd" resultType="pd">
+		select 
+			a.id, a.num, a.total_price, a.status, a.create_time,a.pay_time, a.pay_way, a.real_pay,
+			m.nickname, m.mobile, m.id as member_id,
+			r.addr_province, r.addr_city, r.addr_county, r.addr_detail
+		from 
+			orders a
+		left join
+			member m
+			on a.buy_id=m.id
+		left join
+			receiver r
+			on a.receiver_id = r.id
+		WHERE
+			a.id = #{id}
+	</select>
+
+	<!--通过BuyId获取member数据 -->
+	<select id="findWithMemberByBuyId" parameterType="pd"
+		resultType="pd">
+		select
+			a.num,a.total_price,a.status,a.create_time,m.nickname, m.mobile
+		from
+			orders a,member m
+		where
+			a.buy_id = #{ID} and a.buy_id=m.id and a.status!=9 and a.status is not null
+		order by
+			create_time desc
+	</select>
+
+	<!--通过BuyId获取member数据 -->
+	<select id="findWithReceiverById" parameterType="pd" resultType="pd">
+		select
+			b.id, b.`name`,b.company_name, b.mobile, b.addr_province, b.addr_city, b.addr_county, b.addr_detail,b.post_code
+		from
+			orders a, receiver b
+		where
+			a.num=#{orderId} and a.receiver_id = b.id
+	</select>
+	
+	<select id="findByOrderId" parameterType="pd" resultType="pd">
+		select * from orders a where a.num=#{orderId}
+	</select>
+
+
+	<select id="findOrderItemByNum" parameterType="pd" resultType="pd">
+		select * from order_item a where a.order_num=#{orderId}
+	</select>
+
+
+
+	<!-- 列表 -->
+	<select id="datalistPage" parameterType="page" resultType="pd">
+		select * from
+		orders a where 1=1
+		<if test="pd.userId != null and pd.userId != ''">
+			and a.buy_id=#{pd.userId}
+		</if>
+		<if test="pd.status != null and pd.status != 0">
+			and a.status=#{pd.status}
+		</if>
+	</select>
+
+
+
+	<!-- 列表 -->
+	<select id="datalistPageWithMember" parameterType="page"
+		resultType="pd">
+		select
+		a.id,a.num,a.total_price,a.status,a.create_time,
+		ifnull(m.nickname, a.nickname) as nickname,
+		ifnull(m.mobile, a.mobile) as mobile
+		from
+		orders a
+		left join member m
+		on a.buy_id=m.id
+		where
+		1=1
+		<if test="pd.QUERY_KEY != null and pd.QUERY_KEY != ''">
+			and
+			a.num like CONCAT('%', #{pd.QUERY_KEY},'%')
+		</if>
+		<if test="pd.QUERY_TIME_START!=null and pd.QUERY_TIME_START!=''"><!-- 时间检索 -->
+			and a.create_time &gt;= #{pd.QUERY_TIME_START}
+		</if>
+		<if test="pd.QUERY_TIME_END!=null and pd.QUERY_TIME_END!=''"><!-- 时间检索 -->
+			and a.create_time &lt;= #{pd.QUERY_TIME_END}
+		</if>
+		order by a.create_time desc
+	</select>
+
+	<!-- 列表(全部) -->
+	<select id="listAll" parameterType="pd" resultType="pd">
+		select * from
+		orders a
+	</select>
+
+	<!-- 批量删除 -->
+	<!--<delete id="deleteAll" parameterType="String"> -->
+	<!--delete from orders -->
+	<!--where -->
+	<!--id in -->
+	<!--<foreach item="item" index="index" collection="array" open="(" separator="," 
+		close=")"> -->
+	<!--#{item} -->
+	<!--</foreach> -->
+	<!--</delete> -->
+
+</mapper>

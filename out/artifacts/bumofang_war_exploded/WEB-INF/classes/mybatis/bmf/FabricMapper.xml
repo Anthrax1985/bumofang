@@ -1,0 +1,171 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="FabricMapper">
+	
+	
+	<!-- 新增-->
+	<insert id="save" parameterType="pd">
+		insert into FABRIC(
+			NUMBER,	
+			NAME,	
+			COLOR,	
+			INGREDIENTS,	
+			WIDTH,	
+			FLOWER_SIZE,	
+			FLOWER_DISTANCE,	
+			WEIGHT,	
+			FLAT_PICTURE,	
+			ART_PICTURE,	
+			STREAM_PICTURE,	
+			USE_LABELS,	
+			COLOR_LABELS,	
+			STYLE_TAGS,	
+			COLLOCATION_TAGS,	
+			DESIGN_TAGS,	
+			OTHER_TAGS,	
+			PRICE,	
+			IS_SHOW,	
+			RECORD_ID,	
+			RENDER_FILE,	
+			RECORD_NAME,	
+			RECORD_DATE,	
+			ID
+		) values (
+			#{NUMBER},	
+			#{NAME},	
+			#{COLOR},	
+			#{INGREDIENTS},	
+			#{WIDTH},	
+			#{FLOWER_SIZE},	
+			#{FLOWER_DISTANCE},	
+			#{WEIGHT},	
+			#{FLAT_PICTURE},	
+			#{ART_PICTURE},	
+			#{STREAM_PICTURE},	
+			#{USE_LABELS},	
+			#{COLOR_LABELS},	
+			#{STYLE_TAGS},	
+			#{COLLOCATION_TAGS},	
+			#{DESIGN_TAGS},	
+			#{OTHER_TAGS},	
+			#{PRICE},	
+			#{IS_SHOW},	
+			#{RENDER_FILE},	
+			#{RECORD_ID},	
+			#{RECORD_NAME},	
+			#{RECORD_DATE},	
+			#{ID}
+		)
+	</insert>
+	
+	
+	<!-- 删除-->
+	<delete id="delete" parameterType="pd">
+		delete from FABRIC
+		where 
+			ID = #{ID}
+	</delete>
+	
+	
+	<!-- 修改 -->
+	<update id="edit" parameterType="pd">
+		update  FABRIC
+			set 
+				NUMBER = #{NUMBER},
+				NAME = #{NAME},
+				COLOR = #{COLOR},
+				INGREDIENTS = #{INGREDIENTS},
+				WIDTH = #{WIDTH},
+				FLOWER_SIZE = #{FLOWER_SIZE},
+				FLOWER_DISTANCE = #{FLOWER_DISTANCE},
+				WEIGHT = #{WEIGHT},
+				<if test="FLAT_PICTURE != null and FLAT_PICTURE != ''">
+					FLAT_PICTURE = #{FLAT_PICTURE},
+				</if>
+				<if test="ART_PICTURE != null and ART_PICTURE != ''">
+					ART_PICTURE = #{ART_PICTURE},
+				</if>
+				<if test="STREAM_PICTURE != null and STREAM_PICTURE != ''">
+					STREAM_PICTURE = #{STREAM_PICTURE},
+				</if>
+				<if test="RENDER_FILE != null and RENDER_FILE != ''">
+					RENDER_FILE = #{RENDER_FILE},
+				</if>
+				USE_LABELS = #{USE_LABELS},
+				COLOR_LABELS = #{COLOR_LABELS},
+				STYLE_TAGS = #{STYLE_TAGS},
+				COLLOCATION_TAGS = #{COLLOCATION_TAGS},
+				DESIGN_TAGS = #{DESIGN_TAGS},
+				OTHER_TAGS = #{OTHER_TAGS},
+				PRICE = #{PRICE},
+			ID = ID
+			where 
+				ID = #{ID}
+	</update>
+	
+	
+	<!-- 通过ID获取数据 -->
+	<select id="findById" parameterType="pd" resultType="pd">
+		select * from 
+			FABRIC
+		where 
+			ID = #{ID}
+	</select>
+	
+	
+	<!-- 列表 -->
+	<select id="datalistPage" parameterType="page" resultType="pd">
+		select * from 
+				FABRIC a
+				where 1=1
+		<if test="pd.QUERY_KEY != null and pd.QUERY_KEY != ''">
+			and
+			a.NAME like CONCAT('%', #{pd.QUERY_KEY},'%')
+			or a.COLOR like CONCAT('%', #{pd.QUERY_KEY},'%')
+			or a.NUMBER like CONCAT('%', #{pd.QUERY_KEY},'%')
+			or a.RECORD_NAME like CONCAT('%', #{pd.QUERY_KEY},'%')
+			or a.COLOR_LABELS like CONCAT('%', #{pd.QUERY_KEY},'%')
+			or a.USE_LABELS like CONCAT('%', #{pd.QUERY_KEY},'%')
+		</if>
+		<if test="pd.QUERY_TIME_START!=null and pd.QUERY_TIME_START!=''"><!-- 时间检索 -->
+			and a.RECORD_DATE &gt;= #{pd.QUERY_TIME_START} 
+		</if>
+		<if test="pd.QUERY_TIME_END!=null and pd.QUERY_TIME_END!=''"><!-- 时间检索 -->
+			and a.RECORD_DATE &lt;= #{pd.QUERY_TIME_END} 
+		</if>			
+				order by a.RECORD_DATE desc
+	</select>
+	
+	<!-- 列表(全部) -->
+	<select id="listByCondition" parameterType="pd" resultType="pd">
+		select * from 
+				FABRIC a
+				where 1=1 
+		<if test="style_tag != null and style_tag != ''">
+			and a.STYLE_TAGS like CONCAT('%', #{style_tag},'%')
+		</if>
+		<if test="color_label != null and color_label != ''">
+			and a.COLOR_LABELS like CONCAT('%', #{color_label},'%')
+		</if>
+			order by a.RECORD_DATE desc
+	</select>
+	
+	<!-- 批量删除 -->
+	<delete id="deleteAll" parameterType="String">
+		delete from FABRIC
+		where 
+			ID in
+		<foreach item="item" index="index" collection="array" open="(" separator="," close=")">
+                 #{item}
+		</foreach>
+	</delete>
+	
+	<update id="editShow" parameterType="pd">
+		update  FABRIC
+			set 
+				IS_SHOW = #{IS_SHOW}
+			where 
+				ID = #{ID}
+	</update>
+	
+</mapper>

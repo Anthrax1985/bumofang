@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="ProductRecordApplicationMapper">
+	<resultMap type="ProductRecordApplication" id="productRecordApplicationResultMap">
+		<id column="id" property="id"/>
+		<result column="product_id" property="productId"/>
+		<result column="application_id" property="applicationId"/>
+		<result column="create_user_id" property="createUserId"/>
+		<result column="create_time" property="createTime"/>
+		<result column="application_name" property="applicationName"/>
+	</resultMap>
+	
+	<!-- 新增-->
+	<insert id="save" parameterType="ProductRecordApplication" useGeneratedKeys="true" keyProperty="id">
+		insert into product_record_application(
+			product_id,
+			application_id,
+			create_user_id,
+			create_time
+		) values (
+			#{productId},
+			#{applicationId},
+			#{createUserId},
+			#{createTime}
+		)
+	</insert>
+	
+	<!-- 删除-->
+	<delete id="delete" parameterType="java.lang.Long">
+		delete from product_record_application
+		where 
+			id = #{value}
+	</delete>
+
+	<!-- 修改 -->
+	<update id="edit" parameterType="ProductRecordApplication">
+		update product_record_application
+			set 
+			<if test="productId!=null">
+				product_id = #{productId},
+			</if>
+			<if test="applicationId!=null">
+				application_id = #{applicationId},
+			</if>
+			id = id
+			where 
+				id = #{id}
+	</update>
+	
+	
+	<!-- 通过id获取数据 -->
+	<select id="findById" parameterType="java.lang.Long" resultMap="productRecordApplicationResultMap">
+		select * from 
+			product_record_application
+		where 
+			id = #{value}
+	</select>
+	
+	<!-- 修改 -->
+	<select id="findByCondition" parameterType="ProductRecordApplication" resultMap="productRecordApplicationResultMap">
+			select 
+			a.*,
+			b.application_name 
+			from 
+			product_record_application a
+			LEFT JOIN
+			product_param_application b
+			on
+			b.id = a.application_id
+			where 
+			1=1
+			<if test="createUserId!=null and createUserId!=''">
+				and a.create_user_id = #{createUserId}
+			</if>
+			<if test="productId!=null">
+				and a.product_id = #{productId}
+			</if>
+			<if test="applicationId!=null">
+				and a.application_id = #{applicationId}
+			</if>
+	</select>
+	
+	<!-- 列表 -->
+	<select id="datalistPage" parameterType="page" resultMap="productRecordApplicationResultMap">
+		select * from 
+				product_record_application a where 1=1
+		<if test="pd.query_time_start!=null and pd.query_time_start!=''"><!-- 时间检索 -->
+			and a.create_time &gt;= #{pd.query_time_start}
+		</if>
+		<if test="pd.query_time_end!=null and pd.query_time_end!=''"><!-- 时间检索 -->
+			and a.create_time &lt;= #{pd.query_time_end}
+		</if>	
+		<if test="pd.query_key!=null and pd.query_key!=''"><!-- 关键字检索 -->
+			and a.name like concat('%',#{pd.query_key},'%')
+		</if>
+			order by a.create_time desc	
+	</select>
+	
+	<!-- 列表(全部) -->
+	<select id="listAll" parameterType="String" resultMap="productRecordApplicationResultMap">
+		select * from product_record_application a
+	</select>
+	
+	<!-- 批量删除 -->
+	<delete id="deleteBatch" parameterType="String">
+		delete from product_record_application
+		where 
+			id in
+		<foreach item="item" index="index" collection="array" open="(" separator="," close=")">
+                 #{item}
+		</foreach>
+	</delete>
+		<!-- 删除某一个产品的应用信息 -->
+	<delete id="deleteProductApplication" parameterType="java.lang.Long">
+		delete from product_record_application
+		where 
+			product_id =#{productId}
+	</delete>
+</mapper>

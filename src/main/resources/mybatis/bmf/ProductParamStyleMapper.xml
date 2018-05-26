@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="ProductParamStyleMapper">
+	<resultMap type="ProductParamStyle" id="productParamStyleResultMap">
+		<id column="id" property="id"/>
+		<result column="style_name" property="styleName"/>
+		<result column="style_order" property="styleOrder"/>
+		<result column="create_user_id" property="createUserId"/>
+		<result column="create_time" property="createTime"/>
+	</resultMap>
+	
+	<!-- 新增-->
+	<insert id="save" parameterType="ProductParamStyle" useGeneratedKeys="true" keyProperty="id">
+		insert into product_param_style(
+			style_name,
+			style_order,
+			create_user_id,
+			create_time
+		) values (
+			#{styleName},
+			#{styleOrder},
+			#{createUserId},
+			#{createTime}
+		)
+	</insert>
+	
+	<!-- 删除-->
+	<delete id="delete" parameterType="java.lang.Long">
+		delete from product_param_style
+		where 
+			id = #{value}
+	</delete>
+
+	<!-- 修改 -->
+	<update id="edit" parameterType="ProductParamStyle">
+		update product_param_style
+			set 
+			<if test="styleName!=null and styleName!=''">
+				style_name = #{styleName},
+			</if>
+			<if test="styleOrder!=null">
+				style_order = #{styleOrder},
+			</if>
+			id = id
+			where 
+				id = #{id}
+	</update>
+	
+	
+	<!-- 通过id获取数据 -->
+	<select id="findById" parameterType="java.lang.Long" resultMap="productParamStyleResultMap">
+		select * from 
+			product_param_style
+		where 
+			id = #{value}
+	</select>
+	
+	<!-- 修改 -->
+	<select id="findByCondition" parameterType="ProductParamStyle" resultMap="productParamStyleResultMap">
+		select * from 
+			product_param_style where 1=1
+			<if test="createUserId!=null and createUserId!=''">
+				and create_user_id = #{createUserId}
+			</if>
+			<if test="styleName!=null and styleName!=''">
+				and style_name = #{styleName}
+			</if>
+			<if test="styleOrder!=null">
+				and style_order = #{styleOrder}
+			</if>
+	</select>
+	
+	<!-- 列表 -->
+	<select id="datalistPage" parameterType="page" resultMap="productParamStyleResultMap">
+		select * from 
+				product_param_style a where 1=1
+		<if test="pd.query_time_start!=null and pd.query_time_start!=''"><!-- 时间检索 -->
+			and a.create_time &gt;= #{pd.query_time_start}
+		</if>
+		<if test="pd.query_time_end!=null and pd.query_time_end!=''"><!-- 时间检索 -->
+			and a.create_time &lt;= #{pd.query_time_end}
+		</if>	
+		<if test="pd.query_key!=null and pd.query_key!=''"><!-- 关键字检索 -->
+			and a.name like concat('%',#{pd.query_key},'%')
+		</if>
+			order by a.style_order asc	
+	</select>
+	
+	<!-- 列表(全部) -->
+	<select id="listAll" parameterType="String" resultMap="productParamStyleResultMap">
+		select * from product_param_style a
+				order by a.style_order asc
+	</select>
+	
+	<!-- 批量删除 -->
+	<delete id="deleteBatch" parameterType="String">
+		delete from product_param_style
+		where 
+			id in
+		<foreach item="item" index="index" collection="array" open="(" separator="," close=")">
+                 #{item}
+		</foreach>
+	</delete>
+	
+	<!-- 列表(包含是否被选中等信息) forApp-->
+	<select id="listContainSelected" parameterType="java.lang.Long" resultMap="productParamStyleResultMap">
+		select 
+		a.*,
+		IF(b.id,1,0) 'selected'
+		from 
+		product_param_style a
+		LEFT JOIN
+		product_record_style b
+		ON
+		b.style_id = a.id and b.product_id = #{value}
+		order by a.style_order asc		
+	</select>
+</mapper>

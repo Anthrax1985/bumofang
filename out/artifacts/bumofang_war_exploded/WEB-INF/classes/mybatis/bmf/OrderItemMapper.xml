@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="OrderItemMapper">
+	
+	
+	<!-- 新增-->
+	<insert id="save" parameterType="pd">
+		insert into order_item(
+			fabric_id,
+			order_num,
+			amount,
+			unit_price,
+			total_price,
+			real_pay,
+			discount,
+			buy_id,
+			remark
+		) values (
+			#{fabric_id},
+			#{order_num},
+			#{amount},
+			#{unit_price},
+			#{total_price},
+			#{real_pay},
+			#{discount},
+			#{buy_id},
+			#{remark}
+		)
+	</insert>
+	
+	
+	<!-- 删除-->
+	<delete id="delete" parameterType="pd">
+		delete from order_item
+		where 
+			id = #{id}
+	</delete>
+	
+	
+	<!-- 修改 -->
+	<update id="edit" parameterType="pd">
+		update  order_item
+			set 
+				fabric_id = #{fabric_id},
+				amount = #{amount},
+				unit_price = #{unit_price},
+				total_price = #{total_price},
+				real_pay = #{real_pay},
+				status = #{status},
+				discount = #{discount},
+				buy_id = #{buy_id},
+				remark = #{remark},
+			id = id
+			where 
+				id = #{id}
+	</update>
+	
+	
+	<!-- 通过id获取数据 -->
+	<select id="findById" parameterType="pd" resultType="pd">
+		select * from 
+			order_item
+		where 
+			id = #{id}
+	</select>
+	
+	
+	<!-- 列表 -->
+	<select id="datalistPage" parameterType="page" resultType="pd">
+		select * from 
+				order_item a
+	</select>
+	
+	<select id="listWithFabricByCondition" parameterType="pd" resultType="pd">
+		select a.amount, b.name, b.color, b.ingredients, b.art_picture image_url, b.price from 
+				order_item a, fabric b where a.fabric_id=b.id and 1=1
+		<if test="userId != null and userId != ''">
+			and a.buy_id=#{userId}
+		</if>		
+		<if test="status != null and status != ''">
+			and a.status=#{status}
+		</if>		
+		<if test="orderNum != null and orderNum != ''">
+			and a.order_num=#{orderNum}
+		</if>		
+		<if test="ids != null and ids != ''">
+			and a.id in
+			<foreach item="item" index="index" collection="ids" open="(" separator="," close=")">
+	                 #{item}
+			</foreach>
+		</if>		
+		<if test="orderNums != null and orderNums != ''">
+			and a.order_num in
+			<foreach item="item" index="index" collection="orderNums" open="(" separator="," close=")">
+	                 #{item}
+			</foreach>
+		</if>		
+ 	</select>
+	
+	<!-- 列表(全部) -->
+	<select id="listAll" parameterType="pd" resultType="pd">
+		select * from 
+				order_item a
+	</select>
+	
+	<!-- 批量删除 -->
+	<delete id="deleteAll" parameterType="String">
+		delete from order_item
+		where 
+			id in
+		<foreach item="item" index="index" collection="array" open="(" separator="," close=")">
+                 #{item}
+		</foreach>
+	</delete>
+	
+</mapper>
